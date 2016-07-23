@@ -1,0 +1,8 @@
+.date-selector-dropdown-button { display: inline-block;  font-size: 1rem; background: #ededed; }
+.date-selector-dropdown-button.open::after { content: ""; display: block; position: absolute; bottom: 0; height: 1px; width: 100%; background: rgba(0, 0, 0, 0.05); }
+.date-selector-dropdown-button:hover { background: #e4e4e4; }
+
+.date-selector-dropdown-button > * { display: inline-block; height: 1em; padding: 0.5em 0; }
+.date-selector-dropdown-button .date { width: 5.5em; padding-left: 1em; white-space: nowrap; }
+.date-selector-dropdown-button .arrow { width: 1em; padding-right: 1em; text-align: center; color: #666666;  }
+.date-selector-dropdown-button .arrow span { font-size: 0.75em; vertical-align: top; }
