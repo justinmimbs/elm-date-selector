@@ -8,9 +8,9 @@ import Date exposing (Date)
 import Date.Extra as Date
 import DateSelector
 import Dropdown
-import Html exposing (Html, div, span, text)
+import Html exposing (Html, div, input, text)
 import Html.App as App
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (class, readonly)
 
 
 -- Model
@@ -50,7 +50,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  viewWithButton viewButton model
+  viewWithButton defaultViewButton model
 
 
 viewWithButton : (Bool -> Date -> Html a) -> Model -> Html Msg
@@ -63,20 +63,11 @@ viewWithButton viewButton model =
     App.map DropdownMsg <| Dropdown.view button DateSelector.view model
 
 
-viewButton : Bool -> Date -> Html a
-viewButton isOpen date =
-  div
-    [ classList
-        [ ("date-selector-dropdown-button", True)
-        , ("open", isOpen)
-        ]
+defaultViewButton : Bool -> Date -> Html a
+defaultViewButton isOpen date =
+  input
+    [ class "date-selector-input"
+    , readonly True
+    , Html.Attributes.value <| Date.toFormattedString "yyyy-MM-dd" date
     ]
-    [ div
-        [ class "date" ]
-        [ text <| Date.toFormattedString "yyyy-MM-dd" date ]
-    , div
-        [ class "arrow" ]
-        [ span []
-            [ text <| if isOpen then "\x25B2" else "\x25BC" ]
-        ]
-    ]
+    []

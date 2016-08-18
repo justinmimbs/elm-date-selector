@@ -128,17 +128,21 @@ updateSelected date a =
 -- View
 
 view : Model -> Html Msg
-view model =
+view ((DateSelector a) as model) =
   div
-    [ class "date-selector" ]
+    [ classList
+        [ ("date-selector", True)
+        , ("scrollable-year", year a.max - year a.min >= 12)
+        ]
+    ]
     [ div
-        [ class "column year" ]
+        [ class "year" ]
         [ viewYearList model ]
     , div
-        [ class "column month" ]
+        [ class "month" ]
         [ viewMonthList model ]
     , div
-        [ class "column date" ]
+        [ class "date" ]
         [ viewDateTable model ]
     ]
 

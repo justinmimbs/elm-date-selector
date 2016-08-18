@@ -1,9 +1,9 @@
 import Date exposing (Date, Month(..))
 import Date.Extra as Date
 import DateSelectorDropdown as DateSelector
-import Html exposing (Html, div, button, text, ol, li, pre, h2)
+import Html exposing (Html, div, button, text, h1, span)
 import Html.App as App
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (class, classList, style)
 import Html.Events exposing (onClick)
 
 
@@ -16,7 +16,7 @@ main =
           (Date.fromCalendarDate 2017 Sep 15)
           (Date.fromCalendarDate 2016 Jun 8)
       , dateInput2 = DateSelector.init
-          (Date.fromCalendarDate 2011 Mar 15)
+          (Date.fromCalendarDate 1990 Mar 15)
           (Date.fromCalendarDate 2017 Sep 15)
           (Date.fromCalendarDate 2017 Jun 7)
       }
@@ -64,18 +64,23 @@ update (Form field action) model =
 
 -- View
 
-dateSelectorButton : Bool -> Date -> Html a
-dateSelectorButton isOpen date =
+dateSelectorDropdownButton : Bool -> Date -> Html a
+dateSelectorDropdownButton isOpen date =
   div
-    [ style
-        [ ("display", "inline-block")
-        , ("padding", "5px 10px")
-        , ("font-family", "Menlo, Consolas, monospace")
-        , ("border", "1px solid " ++ if isOpen then "#bbbbbb" else "#dddddd")
-        , ("background", "#ffffff")
+    [ classList
+        [ ("date-selector-dropdown-button", True)
+        , ("open", isOpen)
         ]
     ]
-    [ text <| Date.toFormattedString "yyyy MMM dd" date ]
+    [ div
+        [ class "date" ]
+        [ text <| Date.toFormattedString "yyyy MMM d" date ]
+    , div
+        [ class "arrow" ]
+        [ span []
+            [ text <| if isOpen then "\x25B2" else "\x25BC" ]
+        ]
+    ]
 
 
 view : Model -> Html Msg
@@ -83,8 +88,8 @@ view model =
   div
     [ style [ ("margin", "20px") ] ]
     [ div
-        []
-        [ h2 [] [ text <| "Default button view" ]
+        [ style [ ("padding-bottom", "20px") ] ]
+        [ h1 [] [ text <| "Default button view" ]
         , App.map ((Form Date1) << Input) <| DateSelector.view model.dateInput1
         , button
             [ onClick (Form Date1 Reset), style [ ("margin-left", "10px") ] ]
@@ -92,8 +97,8 @@ view model =
         ]
     , div
         []
-        [ h2 [] [ text <| "Custom button view" ]
-        , App.map ((Form Date2) << Input) <| DateSelector.viewWithButton dateSelectorButton model.dateInput2
+        [ h1 [] [ text <| "Custom button view" ]
+        , App.map ((Form Date2) << Input) <| DateSelector.viewWithButton dateSelectorDropdownButton model.dateInput2
         , button
             [ onClick (Form Date2 Reset), style [ ("margin-left", "10px") ] ]
             [ text "Reset" ]

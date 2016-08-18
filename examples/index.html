@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>index.html</title>
+    <style>
+
+html { font-size: 12px; }
+body { margin: 40px; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; line-height: 1rem; }
+h1 { padding: 0; margin: 2rem 0; font-size: 1.5rem; line-height: 1rem; font-weight: normal; }
+
+.date-selector-dropdown-button { display: inline-block;  font-size: 1rem; background: #eeeeee; }
+.date-selector-dropdown-button.open::after { content: ""; display: block; position: absolute; bottom: 0; height: 1px; width: 100%; background: rgba(0, 0, 0, 0.05); }
+.date-selector-dropdown-button:hover { background: #e4e4e4; }
+
+.date-selector-dropdown-button > * { display: inline-block; height: 1em; padding: 1em 0; }
+.date-selector-dropdown-button .date { width: 6.5em; padding-left: 1em; white-space: nowrap; }
+.date-selector-dropdown-button .arrow { width: 1em; padding-right: 1em; text-align: center; color: #666666;  }
+.date-selector-dropdown-button .arrow span { font-size: 0.75em; vertical-align: top; }
+
+    </style>
+    <link rel="stylesheet" href="date-selector-dropdown.css">
+  </head>
+  <body>
+    <script src="_compile/Main.elm"></script>
+    <script>
+
+Elm.Main.fullscreen();
+
+    </script>
+  </body>
+</html>

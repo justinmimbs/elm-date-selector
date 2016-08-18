@@ -1,0 +1,59 @@
+/*
+DateSelector
+*/
+
+.date-selector { font-size: 1rem; width: 27em; height: 20em; line-height: 1em; color: #333333; background: #eeeeee; cursor: default; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+.date-selector > div { float: left; height: 18em; overflow-y: auto; overflow-x: hidden; padding: 1em 0; border-left: 1px solid rgba(0, 0, 0, 0.1); margin-left: -1px; }
+.date-selector > div:first-child { border-left: none; margin-left: 0; }
+
+.date-selector > div.year { width: 4.5em; }
+.date-selector > div.month { width: 4em; }
+.date-selector > div.date { width: 18.5em; }
+
+.date-selector ol { margin: 0; padding: 0; list-style: none; }
+.date-selector li { margin: 0; padding: 0.25em 1em; }
+
+.date-selector table { table-layout: fixed; border-collapse: collapse; }
+.date-selector table th,
+.date-selector table td { width: 1.5em; height: 1em; text-align: right; padding: 0.75em 0.5em; }
+.date-selector table th { position: relative; font-weight: normal; padding-top: 0.25em; color: #aaaaaa; }
+.date-selector table th::after { position: absolute; bottom: 0; left: 0; right: 0; display: block; content: ""; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+.date-selector table th:first-child,
+.date-selector table td:first-child { padding-left: 1em; }
+.date-selector table th:last-child,
+.date-selector table td:last-child { padding-right: 1em; }
+
+.date-selector li:hover,
+.date-selector table td:hover { background: rgba(0, 0, 0, 0.06); }
+
+.date-selector .selected,
+.date-selector .selected:hover { background: #69b3ff; color: #ffffff; }
+
+.date-selector .dimmed { color: #aaaaaa; }
+
+.date-selector .disabled,
+.date-selector .disabled:hover { color: #dddddd; background: transparent; }
+
+/* scrollable-year */
+.date-selector.scrollable-year { width: 28em; }
+.date-selector.scrollable-year > div.year { width: 5.5em; }
+
+
+/*
+DateSelectorDropdown
+*/
+
+.date-selector-input { font-size: 1rem; line-height: 1em; width: 6em; margin: 0; padding: 0.5em 1em; }
+
+
+/*
+Dropdown
+*/
+
+.dropdown { display: inline-block; }
+.dropdown .button-container { cursor: default; }
+
+.dropdown.open { position: relative; z-index: 1; }
+.dropdown.open .page-cover { position: fixed; top: 0; right: 0; bottom: 0; left: 0; }
+.dropdown.open .button-container  { position: relative; z-index: 1; }
+.dropdown.open .content-container { position: absolute; box-shadow: 0 0.25em 2em 1px rgba(60, 60, 60, 0.35); }
