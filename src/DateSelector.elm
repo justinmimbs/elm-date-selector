@@ -4,11 +4,11 @@ import Date exposing (Date, Month(..), year, month, day)
 import Date.Extra as Date exposing (Interval(..))
 import Date.Extra.Facts exposing (isLeapYear, daysInMonth, monthFromMonthNumber)
 import Html exposing (Html, text, div, table, thead, tbody, tr, th, td, ol, li)
+import Html.App as App
 import Html.Attributes exposing (class, classList, property)
 import Html.Events exposing (on)
 import Json.Decode
 import Json.Encode
-import VirtualDom as Dom
 
 
 chunk : Int -> List a -> List (List a)
@@ -27,7 +27,6 @@ isBetween a b x =
 monthDates : Int -> Month -> List Date
 monthDates y m =
   let
-    _ = Debug.log "monthDates" (y, m)
     start = Date.floor Monday <| Date.fromCalendarDate y m 1
   in
     Date.range Day 1 start <| Date.add Day 42 start
@@ -74,7 +73,7 @@ view min max selected =
         [ class "date" ]
         [ viewDateTable min max selected ]
     ]
-  |> Dom.map (Date.clamp min max)
+  |> App.map (Date.clamp min max)
 
 
 viewYearList : Date -> Date -> Date -> Html Date
@@ -95,7 +94,6 @@ viewYearList min max selected =
           , property "year" <| Json.Encode.int y
           ]
           [ text (toString y) ]))
-
 
 
 monthNames : List String
