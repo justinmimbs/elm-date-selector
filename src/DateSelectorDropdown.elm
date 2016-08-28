@@ -9,13 +9,13 @@ import Html.App as App
 import Html.Attributes exposing (class, readonly, value)
 
 
-view : msg -> (Date -> msg) -> Date -> Date -> Date -> Bool -> Html msg
+view : msg -> (Date -> msg) -> Bool -> Date -> Date -> Date -> Html msg
 view =
   viewWithButton defaultViewButton
 
 
-viewWithButton : (Bool -> Date -> Html a) -> msg -> (Date -> msg) -> Date -> Date -> Date -> Bool -> Html msg
-viewWithButton viewButton toggle mapSelect min max selected isOpen =
+viewWithButton : (Bool -> Date -> Html a) -> msg -> (Date -> msg) -> Bool -> Date -> Date -> Date -> Html msg
+viewWithButton viewButton toggle mapSelect isOpen min max selected =
   let
     dateSelectorView =
       if isOpen then

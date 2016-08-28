@@ -1,10 +1,8 @@
 import Date exposing (Date, Month(..))
 import Date.Extra as Date
 import DateSelector
-import Html exposing (Html, div, button, text, h1, span)
+import Html exposing (Html, div, text, h1)
 import Html.App as App
-import Html.Attributes exposing (class, classList, type')
-import Html.Events exposing (onClick)
 import String
 
 

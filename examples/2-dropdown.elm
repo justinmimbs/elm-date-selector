@@ -1,10 +1,8 @@
 import Date exposing (Date, Month(..))
 import Date.Extra as Date
 import DateSelectorDropdown
-import Html exposing (Html, div, button, text, h1, span, input)
+import Html exposing (Html, div, text, h1)
 import Html.App as App
-import Html.Attributes exposing (class, classList, type', readonly, value)
-import Html.Events exposing (onClick)
 import String
 
 
@@ -60,5 +58,5 @@ view { min, max, selected, isOpen } =
             ]
         ]
     , h1 [] [ text <| Date.toFormattedString "EEE MMM d, yyyy" selected ]
-    , DateSelectorDropdown.view Toggle Select min max selected isOpen
+    , DateSelectorDropdown.view Toggle Select isOpen min max selected
     ]
