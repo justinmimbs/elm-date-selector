@@ -1,68 +1,37 @@
-module Dropdown exposing (Model, init, Msg(Content), update, view)
+module Dropdown exposing (view)
 
-import Html exposing (Html, div, text)
+import Html exposing (Html, div)
 import Html.App as App
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
 
--- Model
-
-type alias Model a =
-  { isOpen: Bool
-  , content: a
-  }
-
-
-init : a -> Model a
-init content =
-  Model False content
-
-
--- Update
-
-type Msg b
-  = Toggle
-  | Content b
-
-
-update : (b -> a -> a) -> (Msg b) -> (Model a) -> (Model a)
-update updateContent msg model =
-  case msg of
-    Toggle ->
-      { model | isOpen = not model.isOpen }
-    Content b ->
-      { model | content = updateContent b model.content }
-
-
--- View
-
-view : (Bool -> a -> Html c) -> (a -> Html b) -> (Model a) -> Html (Msg b)
-view viewButton viewContent model =
+view : msg -> Html a -> Maybe (Html msg) -> Html msg
+view toggle button maybeContent =
   let
-    button =
+    buttonContainer =
       div
         [ class "button-container"
-        , onClick Toggle
+        , onClick toggle
         ]
-        [ App.map (\_ -> Toggle) <| viewButton model.isOpen model.content ]
+        [ button |> App.map (\_ -> toggle) ]
   in
-    div
-      [ classList
-          [ ("dropdown", True)
-          , ("open", model.isOpen)
+    case maybeContent of
+      Nothing ->
+        div
+          [ class "dropdown" ]
+          [ buttonContainer ]
+
+      Just content ->
+        div
+          [ class "dropdown open" ]
+          [ div
+              [ class "page-cover"
+              , onClick toggle
+              ]
+              []
+          , buttonContainer
+          , div
+              [ class "content-container" ]
+              [ content ]
           ]
-      ] <|
-      if not model.isOpen then
-        [ button ]
-      else
-        [ div
-            [ class "page-cover"
-            , onClick Toggle
-            ]
-            []
-        , button
-        , div
-            [ class "content-container" ]
-            [ App.map Content (viewContent model.content) ]
-        ]
