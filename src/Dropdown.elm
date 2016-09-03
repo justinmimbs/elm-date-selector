@@ -11,7 +11,7 @@ view toggle button maybeContent =
   let
     buttonContainer =
       div
-        [ class "button-container"
+        [ class "dropdown--button-container"
         , onClick toggle
         ]
         [ button |> App.map (\_ -> toggle) ]
@@ -24,14 +24,14 @@ view toggle button maybeContent =
 
       Just content ->
         div
-          [ class "dropdown open" ]
+          [ class "dropdown-open" ]
           [ div
-              [ class "page-cover"
+              [ class "dropdown--page-cover"
               , onClick toggle
               ]
               []
           , buttonContainer
           , div
-              [ class "content-container" ]
+              [ class "dropdown--content-container" ]
               [ content ]
           ]

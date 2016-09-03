@@ -20,7 +20,7 @@ main =
   }
 
 
--- Model
+-- model
 
 type alias Model =
   { min : Date
@@ -30,7 +30,7 @@ type alias Model =
   }
 
 
--- Update
+-- update
 
 type Msg
   = Select Date
@@ -46,14 +46,14 @@ update msg model =
       { model | isOpen = not model.isOpen }
 
 
--- View
+-- view
 
 view : Model -> Html Msg
 view { min, max, selected, isOpen } =
   div []
     [ Html.node "style" [] 
         [ text <| String.join " "
-            [ "@import url(./style.css);"
+            [ "@import url(./examples.css);"
             , "@import url(./date-selector-dropdown.css);"
             ]
         ]

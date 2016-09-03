@@ -53,27 +53,42 @@ dateWithMonth date m =
     Date.fromCalendarDate y m <| Basics.min d (daysInMonth y m)
 
 
--- View
+-- view
+
+type State
+  = Selected
+  | Disabled
+  | Dimmed
+  | Normal
+
+
+isSelectable : State -> Bool
+isSelectable state =
+  state == Normal || state == Dimmed
+
+
+classNameFromState : State -> String
+classNameFromState state =
+  case state of
+    Selected -> "date-selector--selected"
+    Disabled -> "date-selector--disabled"
+    Dimmed   -> "date-selector--dimmed"
+    Normal   -> ""
+
 
 view : Date -> Date -> Date -> Html Date
 view min max selected =
   div
     [ classList
         [ ("date-selector", True)
-        , ("scrollable-year", year max - year min >= 12)
+        , ("date-selector--scrollable-year", year max - year min >= 12)
         ]
     ]
-    [ div
-        [ class "year" ]
-        [ viewYearList min max selected ]
-    , div
-        [ class "month" ]
-        [ viewMonthList min max selected ]
-    , div
-        [ class "date" ]
-        [ viewDateTable min max selected ]
+    [ div [] [ viewYearList min max selected ]
+    , div [] [ viewMonthList min max selected ]
+    , div [] [ viewDateTable min max selected ]
     ]
-  |> App.map (Date.clamp min max)
+    |> App.map (Date.clamp min max)
 
 
 viewYearList : Date -> Date -> Date -> Html Date
@@ -89,11 +104,21 @@ viewYearList min max selected =
           (Json.Decode.at ["target", "year"] Json.Decode.int)
       ]
       (years |> List.map (\y ->
-        li
-          [ classList [ ("selected", y == selectedYear) ]
-          , property "year" <| Json.Encode.int y
-          ]
-          [ text (toString y) ]))
+        let
+          state =
+            if y == selectedYear then
+              Selected
+            else
+              Normal
+        in
+          li
+            ([ class <| classNameFromState state ]
+              ++
+              if isSelectable state then
+                [ property "year" <| Json.Encode.int y ]
+              else
+                [])
+            [ text (toString y) ]))
 
 
 monthNames : List String
@@ -116,14 +141,21 @@ viewMonthList min max selected =
       (monthNames |> List.indexedMap (\i name ->
         let
           n = i + 1
+          state =
+            if n == Date.monthNumber selected then
+              Selected
+            else if not (isBetween first last n) then
+              Disabled
+            else
+              Normal
         in
           li
-            [ classList
-                [ ("selected", n == Date.monthNumber selected)
-                , ("disabled", not <| isBetween first last n)
-                ]
-            , property "monthNumber" <| Json.Encode.int n
-            ]
+            ([ class <| classNameFromState state ]
+              ++
+              if isSelectable state then
+                [ property "monthNumber" <| Json.Encode.int n ]
+              else
+                [])
             [ text name ]))
 
 
@@ -152,13 +184,23 @@ viewDateTable min max selected =
           (weeks |> List.map (\week ->
             tr []
               (week |> List.map (\date ->
-                td
-                  [ classList
-                      [ ("selected", Date.equal date selected)
-                      , ("dimmed", month date /= month selected)
-                      , ("disabled", not <| Date.isBetween min max date)
-                      ]
-                  , property "time" <| Json.Encode.float (Date.toTime date)
-                  ]
-                  [ text (day date |> toString) ]))))
+                let
+                  state =
+                    if Date.equal date selected then
+                      Selected
+                    else if not (Date.isBetween min max date) then
+                      Disabled
+                    else if month date /= month selected then
+                      Dimmed
+                    else
+                      Normal
+                in
+                  td
+                    ([ class <| classNameFromState state ]
+                      ++
+                      if isSelectable state then
+                        [ property "time" <| Json.Encode.float (Date.toTime date) ]
+                      else
+                        [])
+                    [ text (day date |> toString) ]))))
       ]
