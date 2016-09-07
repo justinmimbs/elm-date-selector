@@ -56,10 +56,10 @@ dateWithMonth date m =
 -- view
 
 type State
-  = Selected
-  | Disabled
+  = Normal
   | Dimmed
-  | Normal
+  | Disabled
+  | Selected
 
 
 isSelectable : State -> Bool
@@ -70,10 +70,10 @@ isSelectable state =
 classNameFromState : State -> String
 classNameFromState state =
   case state of
-    Selected -> "date-selector--selected"
-    Disabled -> "date-selector--disabled"
-    Dimmed   -> "date-selector--dimmed"
     Normal   -> ""
+    Dimmed   -> "date-selector--dimmed"
+    Disabled -> "date-selector--disabled"
+    Selected -> "date-selector--selected"
 
 
 view : Date -> Date -> Date -> Html Date

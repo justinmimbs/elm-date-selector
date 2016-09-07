@@ -44,7 +44,7 @@ update (Select date) model =
 view : Model -> Html Msg
 view { min, max, selected } =
   div []
-    [ Html.node "style" [] 
+    [ Html.node "style" []
         [ text <| String.join " "
             [ "@import url(./examples.css);"
             , "@import url(./date-selector-dropdown.css);"
