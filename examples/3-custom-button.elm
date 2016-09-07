@@ -1,106 +1,89 @@
 import Date exposing (Date, Month(..))
 import Date.Extra as Date
-import DateSelectorDropdown as DateSelector
-import Html exposing (Html, div, button, text, h1, span)
+import DateSelectorDropdown
+import Html exposing (Html, div, h1, span, text)
 import Html.App as App
-import Html.Attributes exposing (class, classList, style)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (class, classList)
+import String
 
 
 main : Program Never
 main =
   App.beginnerProgram
   { model =
-      { dateInput1 = DateSelector.init
-          (Date.fromCalendarDate 2011 Mar 15)
-          (Date.fromCalendarDate 2017 Sep 15)
-          (Date.fromCalendarDate 2016 Jun 8)
-      , dateInput2 = DateSelector.init
-          (Date.fromCalendarDate 1990 Mar 15)
-          (Date.fromCalendarDate 2017 Sep 15)
-          (Date.fromCalendarDate 2017 Jun 7)
-      }
+      Model
+        (Date.fromCalendarDate 2011 Mar 15)
+        (Date.fromCalendarDate 2017 Sep 15)
+        (Date.fromCalendarDate 2016 Sep 15)
+        False
   , view = view
   , update = update
   }
 
 
--- Model
+-- model
 
 type alias Model =
-  { dateInput1 : DateSelector.Model
-  , dateInput2 : DateSelector.Model
+  { min : Date
+  , max : Date
+  , selected : Date
+  , isOpen : Bool
   }
 
 
--- Update
-
-type Field
-  = Date1
-  | Date2
-
-
-type FieldAction
-  = Input DateSelector.Msg
-  | Reset
-
+-- update
 
 type Msg
-  = Form Field FieldAction
+  = Select Date
+  | Toggle
 
 
 update : Msg -> Model -> Model
-update (Form field action) model =
-  let
-    msg =
-      case action of
-        Input m -> m
-        Reset -> DateSelector.SelectDate (Date.fromCalendarDate 2016 Jun 8)
-  in
-    case field of
-      Date1 -> { model | dateInput1 = DateSelector.update msg model.dateInput1 }
-      Date2   -> { model | dateInput2 = DateSelector.update msg model.dateInput2 }
+update msg model =
+  case msg of
+    Select date ->
+      { model | selected = date }
+    Toggle ->
+      { model | isOpen = not model.isOpen }
 
 
--- View
+-- view
 
-dateSelectorDropdownButton : Bool -> Date -> Html a
-dateSelectorDropdownButton isOpen date =
+view : Model -> Html Msg
+view { min, max, selected, isOpen } =
+  div []
+    [ Html.node "style" []
+        [ text <| String.join " "
+            [ "@import url(./examples.css);"
+            , "@import url(./date-selector-dropdown.css);"
+            , "@import url(./custom-button.css);"
+            ]
+        ]
+    , h1 [] [ text <| Date.toFormattedString "EEE MMM d, yyyy" selected ]
+    , DateSelectorDropdown.viewWithButton
+        viewCustomButton
+        Toggle
+        Select
+        isOpen
+        min
+        max
+        selected
+    ]
+
+viewCustomButton : Bool -> Date -> Html a
+viewCustomButton isOpen date =
   div
     [ classList
         [ ("date-selector-dropdown-button", True)
-        , ("open", isOpen)
+        , ("date-selector-dropdown-button--open", isOpen)
         ]
     ]
     [ div
-        [ class "date" ]
+        [ class "date-selector-dropdown-button--date" ]
         [ text <| Date.toFormattedString "yyyy MMM d" date ]
     , div
-        [ class "arrow" ]
+        [ class "date-selector-dropdown-button--arrow" ]
         [ span []
             [ text <| if isOpen then "\x25B2" else "\x25BC" ]
-        ]
-    ]
-
-
-view : Model -> Html Msg
-view model =
-  div
-    [ style [ ("margin", "20px") ] ]
-    [ div
-        [ style [ ("padding-bottom", "20px") ] ]
-        [ h1 [] [ text <| "Default button view" ]
-        , App.map ((Form Date1) << Input) <| DateSelector.view model.dateInput1
-        , button
-            [ onClick (Form Date1 Reset), style [ ("margin-left", "10px") ] ]
-            [ text "Reset" ]
-        ]
-    , div
-        []
-        [ h1 [] [ text <| "Custom button view" ]
-        , App.map ((Form Date2) << Input) <| DateSelector.viewWithButton dateSelectorDropdownButton model.dateInput2
-        , button
-            [ onClick (Form Date2 Reset), style [ ("margin-left", "10px") ] ]
-            [ text "Reset" ]
         ]
     ]
