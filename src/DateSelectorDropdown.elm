@@ -32,8 +32,7 @@ viewWithButton viewButton toggle mapSelect isOpen min max selected =
 defaultViewButton : Bool -> Date -> Html a
 defaultViewButton isOpen date =
   input
-    [ class "date-selector-dropdown--input"
+    [ value <| Date.toFormattedString "yyyy-MM-dd" date
     , readonly True
-    , value <| Date.toFormattedString "yyyy-MM-dd" date
     ]
     []

@@ -2,7 +2,7 @@
 DateSelector
 */
 
-.date-selector { font-size: 1rem; width: 27em; height: 20em; line-height: 1em; background: #eeeeee; color: #333333; cursor: default; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.date-selector { font-size: 1em; width: 27em; height: 20em; line-height: 1em; background: #eeeeee; color: #333333; cursor: default; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
 .date-selector > div { float: left; height: 18em; overflow-y: auto; overflow-x: hidden; padding: 1em 0; border-left: 1px solid rgba(0, 0, 0, 0.1); margin-left: -1px; }
 .date-selector > div:nth-child(1) { width: 4.5em; border-left: none; margin-left: 0; }
@@ -23,7 +23,7 @@ DateSelector
 .date-selector td:last-child { padding-right: 1em; }
 
 .date-selector li:hover,
-.date-selector td:hover { background: rgba(0, 0, 0, 0.06); }
+.date-selector td:hover { background: rgba(0, 0, 0, 0.05); }
 
 .date-selector--selected,
 .date-selector--selected.date-selector--selected:hover { background: #69b3ff; color: #ffffff; }
@@ -35,14 +35,7 @@ DateSelector
 
 /* scrollable-year */
 .date-selector--scrollable-year { width: 28em; }
-.date-selector--scrollable-year > div:nth-child(3) { width: 5.5em; }
-
-
-/*
-DateSelectorDropdown
-*/
-
-.date-selector-dropdown--input { font-size: 1rem; line-height: 1em; width: 6.3em; margin: 0; padding: 0.5em 1em; border: 1px #cccccc solid; }
+.date-selector--scrollable-year > div:nth-child(1) { width: 5.5em; }
 
 
 /*

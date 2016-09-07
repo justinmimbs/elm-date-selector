@@ -1,3 +1,7 @@
 html { font-size: 12px; }
 body { margin: 40px; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; line-height: 1rem; }
-h1 { padding: 0; margin: 2rem 0; font-size: 1.5rem; line-height: 1rem; font-weight: normal; }
+h1 { margin: 2rem 0; padding: 0; font-size: 1.5rem; line-height: 1rem; font-weight: normal; }
+input { margin: 0; padding: 1em; font-size: 1rem; line-height: 1em; width: 6.3em; border: 1px solid #dddddd; }
+label { display: block; margin: 0.5em 1em; color: #999999; }
+
+.column { float: left; margin: 0 2em 2em 0; }
