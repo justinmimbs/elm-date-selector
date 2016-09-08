@@ -4,6 +4,7 @@ import DateSelectorDropdown
 import Html exposing (Html, div, h1, span, text)
 import Html.App as App
 import Html.Attributes exposing (class, classList)
+import Html.Events exposing (onClick)
 import String
 
 
@@ -14,7 +15,7 @@ main =
       Model
         (Date.fromCalendarDate 2011 Mar 15)
         (Date.fromCalendarDate 2017 Sep 15)
-        (Date.fromCalendarDate 2016 Sep 15)
+        (Just <| Date.fromCalendarDate 2016 Sep 15)
         False
   , view = view
   , update = update
@@ -26,7 +27,7 @@ main =
 type alias Model =
   { min : Date
   , max : Date
-  , selected : Date
+  , maybeSelected : Maybe Date
   , isOpen : Bool
   }
 
@@ -34,15 +35,15 @@ type alias Model =
 -- update
 
 type Msg
-  = Select Date
+  = Select (Maybe Date)
   | Toggle
 
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Select date ->
-      { model | selected = date }
+    Select maybeDate ->
+      { model | maybeSelected = maybeDate }
     Toggle ->
       { model | isOpen = not model.isOpen }
 
@@ -50,7 +51,7 @@ update msg model =
 -- view
 
 view : Model -> Html Msg
-view { min, max, selected, isOpen } =
+view { min, max, maybeSelected, isOpen } =
   div []
     [ Html.node "style" []
         [ text <| String.join " "
@@ -59,31 +60,47 @@ view { min, max, selected, isOpen } =
             , "@import url(./custom-button.css);"
             ]
         ]
-    , h1 [] [ text <| Date.toFormattedString "EEE MMM d, yyyy" selected ]
+    , h1 [] [ text (maybeSelected |> Maybe.map (Date.toFormattedString "'Just' (EEE MMM d, yyyy)") |> Maybe.withDefault "Nothing") ]
     , DateSelectorDropdown.viewWithButton
         viewCustomButton
         Toggle
-        Select
+        (Select << Just)
         isOpen
         min
         max
-        (Just selected)
+        maybeSelected
     ]
 
-viewCustomButton : Bool -> Maybe Date -> Html a
+
+viewCustomButton : Bool -> Maybe Date -> Html Msg
 viewCustomButton isOpen maybeDate =
   div
     [ classList
         [ ("date-selector-dropdown-button", True)
         , ("date-selector-dropdown-button--open", isOpen)
         ]
+
     ]
     [ div
         [ class "date-selector-dropdown-button--date" ]
         [ text (maybeDate |> Maybe.map (Date.toFormattedString "yyyy MMM d") |> Maybe.withDefault "") ]
+
+    , case maybeDate of
+        Just _ ->
+          div
+            [ class "date-selector-dropdown-button--clear"
+            , onClick (Select Nothing)
+            ]
+            [ text "\x2716" ]
+
+        Nothing ->
+          div
+            [ class "date-selector-dropdown-button--clear" ]
+            []
+
     , div
-        [ class "date-selector-dropdown-button--arrow" ]
-        [ span []
-            [ text <| if isOpen then "\x25B2" else "\x25BC" ]
+        [ class "date-selector-dropdown-button--toggle"
+        , onClick Toggle
         ]
+        [ span [] [ text <| if isOpen then "\x25B2" else "\x25BC" ] ]
     ]

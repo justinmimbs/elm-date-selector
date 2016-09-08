@@ -1,20 +1,17 @@
 module Dropdown exposing (view)
 
 import Html exposing (Html, div)
-import Html.App as App
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
 
-view : msg -> Html a -> Maybe (Html msg) -> Html msg
-view toggle button maybeContent =
+view : msg -> Html msg -> Maybe (Html msg) -> Html msg
+view close button maybeContent =
   let
     buttonContainer =
       div
-        [ class "dropdown--button-container"
-        , onClick toggle
-        ]
-        [ button |> App.map (\_ -> toggle) ]
+        [ class "dropdown--button-container" ]
+        [ button ]
   in
     case maybeContent of
       Nothing ->
@@ -27,7 +24,7 @@ view toggle button maybeContent =
           [ class "dropdown-open" ]
           [ div
               [ class "dropdown--page-cover"
-              , onClick toggle
+              , onClick close
               ]
               []
           , buttonContainer

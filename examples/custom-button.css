@@ -1,8 +1,14 @@
-.date-selector-dropdown-button { display: inline-block;  font-size: 1em; background: #eeeeee; }
-.date-selector-dropdown-button:hover div { background: rgba(0, 0, 0, 0.05); }
-.date-selector-dropdown-button--open::after { content: ""; display: block; position: absolute; bottom: 0; height: 1px; width: 100%; background: rgba(0, 0, 0, 0.05); }
+.date-selector-dropdown-button { font-size: 1em; background: #eeeeee; color: #333333; }
+.date-selector-dropdown-button--open { border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
 
-.date-selector-dropdown-button div { display: inline-block; height: 1em; padding: 1em; }
-.date-selector-dropdown-button--date { width: 6em; white-space: nowrap; }
-.date-selector-dropdown-button--arrow { color: #666666; border-left: 1px solid rgba(0, 0, 0, 0.05); }
-.date-selector-dropdown-button--arrow span { font-size: 0.8em; vertical-align: top; }
+.date-selector-dropdown-button--date,
+.date-selector-dropdown-button--clear,
+.date-selector-dropdown-button--toggle { float: left; height: 1em; padding: 1em; }
+.date-selector-dropdown-button::after {  content: ""; display: block; clear: both; }
+
+.date-selector-dropdown-button--date { width: 6em; padding-right: 0; white-space: nowrap; }
+.date-selector-dropdown-button--clear { width: 1em; text-align: center; color: #cccccc; }
+.date-selector-dropdown-button--clear:hover { color: #333333; }
+.date-selector-dropdown-button--toggle { width: 1em; text-align: center; color: #666666; border-left: 1px solid rgba(0, 0, 0, 0.05); }
+.date-selector-dropdown-button--toggle:hover { background: rgba(0, 0, 0, 0.05); }
+.date-selector-dropdown-button--toggle span { font-size: 0.8em; vertical-align: top; }

@@ -7,15 +7,16 @@ import Dropdown
 import Html exposing (Html, input)
 import Html.App as App
 import Html.Attributes exposing (class, readonly, value)
+import Html.Events exposing (onClick)
 
 
 view : msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
-view =
-  viewWithButton defaultViewButton
+view toggle =
+  viewWithButton (defaultViewButton toggle) toggle
 
 
-viewWithButton : (Bool -> Maybe Date -> Html a) -> msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
-viewWithButton viewButton toggle mapSelect isOpen min max selected =
+viewWithButton : (Bool -> Maybe Date -> Html msg) -> msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
+viewWithButton viewButton close mapSelect isOpen min max selected =
   let
     dateSelectorView =
       if isOpen then
@@ -24,15 +25,16 @@ viewWithButton viewButton toggle mapSelect isOpen min max selected =
         Nothing
   in
     Dropdown.view
-      toggle
+      close
       (viewButton isOpen selected)
       dateSelectorView
 
 
-defaultViewButton : Bool -> Maybe Date -> Html a
-defaultViewButton isOpen maybeDate =
+defaultViewButton : msg -> Bool -> Maybe Date -> Html msg
+defaultViewButton toggle isOpen maybeDate =
   input
     [ value (maybeDate |> Maybe.map (Date.toFormattedString "yyyy-MM-dd") |> Maybe.withDefault "")
     , readonly True
+    , onClick toggle
     ]
     []
