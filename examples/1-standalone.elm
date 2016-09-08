@@ -30,18 +30,14 @@ type alias Model =
 
 -- update
 
-type Msg
-  = Select Date
-
-
-update : Msg -> Model -> Model
-update (Select date) model =
+update : Date -> Model -> Model
+update date model =
   { model | selected = date }
 
 
 -- view
 
-view : Model -> Html Msg
+view : Model -> Html Date
 view { min, max, selected } =
   div []
     [ Html.node "style" []
@@ -51,5 +47,5 @@ view { min, max, selected } =
             ]
         ]
     , h1 [] [ text <| Date.toFormattedString "EEE MMM d, yyyy" selected ]
-    , DateSelector.view min max (Just selected) |> App.map Select
+    , DateSelector.view min max (Just selected)
     ]

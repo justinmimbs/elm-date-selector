@@ -1,13 +1,14 @@
 {
     "version": "1.0.0",
-    "summary": "A date-selector UI view",
+    "summary": "A UI view for selecting dates",
     "repository": "https://github.com/justinmimbs/elm-date-selector.git",
     "license": "BSD3",
     "source-directories": [
         "src"
     ],
     "exposed-modules": [
-
+        "DateSelector",
+        "DateSelectorDropdown"
     ],
     "dependencies": {
         "elm-lang/core": "4.0.5 <= v < 5.0.0",

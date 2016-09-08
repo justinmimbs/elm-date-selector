@@ -91,7 +91,7 @@ viewCustomButton isOpen maybeDate =
             [ class "date-selector-dropdown-button--clear"
             , onClick (Select Nothing)
             ]
-            [ text "\x2716" ]
+            [ text "\x2715" ]
 
         Nothing ->
           div
