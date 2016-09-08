@@ -28,7 +28,7 @@ type alias Model =
   { today : Date
   , from : Date
   , to : Date
-  , birthdate : Date
+  , birthdate : Maybe Date
   , openDateField : Maybe DateField
   }
 
@@ -39,7 +39,7 @@ init today =
     today
     (Date.floor Month today)
     (Date.ceiling Month today |> Date.add Day -1)
-    today
+    Nothing
     Nothing
 
 
@@ -57,7 +57,7 @@ update msg model =
       case dateField of
         From      -> { model | from = date }
         To        -> { model | to = date }
-        Birthdate -> { model | birthdate = date }
+        Birthdate -> { model | birthdate = Just date }
 
     Toggle dateField ->
       { model
@@ -85,7 +85,7 @@ view { today, from, to, birthdate, openDateField } =
         , viewDateSelector From openDateField
             (Date.add Year -10 today)
             to
-            from
+            (Just from)
         ]
     , div
         [ class "column" ]
@@ -93,7 +93,7 @@ view { today, from, to, birthdate, openDateField } =
         , viewDateSelector To openDateField
             from
             (Date.add Year 1 today)
-            to
+            (Just to)
         ]
     , div [ style [ ("clear", "both") ] ] []
 
@@ -105,7 +105,7 @@ view { today, from, to, birthdate, openDateField } =
     ]
 
 
-viewDateSelector : DateField -> (Maybe DateField) -> Date -> Date -> Date -> Html Msg
+viewDateSelector : DateField -> (Maybe DateField) -> Date -> Date -> Maybe Date -> Html Msg
 viewDateSelector dateField openDateField =
   DateSelectorDropdown.view
     (Toggle dateField)

@@ -64,5 +64,5 @@ view { min, max, selected, isOpen } =
         isOpen
         min
         max
-        selected
+        (Just selected)
     ]

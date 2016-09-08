@@ -51,5 +51,5 @@ view { min, max, selected } =
             ]
         ]
     , h1 [] [ text <| Date.toFormattedString "EEE MMM d, yyyy" selected ]
-    , DateSelector.view min max selected |> App.map Select
+    , DateSelector.view min max (Just selected) |> App.map Select
     ]

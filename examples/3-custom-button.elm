@@ -67,11 +67,11 @@ view { min, max, selected, isOpen } =
         isOpen
         min
         max
-        selected
+        (Just selected)
     ]
 
-viewCustomButton : Bool -> Date -> Html a
-viewCustomButton isOpen date =
+viewCustomButton : Bool -> Maybe Date -> Html a
+viewCustomButton isOpen maybeDate =
   div
     [ classList
         [ ("date-selector-dropdown-button", True)
@@ -80,7 +80,7 @@ viewCustomButton isOpen date =
     ]
     [ div
         [ class "date-selector-dropdown-button--date" ]
-        [ text <| Date.toFormattedString "yyyy MMM d" date ]
+        [ text (maybeDate |> Maybe.map (Date.toFormattedString "yyyy MMM d") |> Maybe.withDefault "") ]
     , div
         [ class "date-selector-dropdown-button--arrow" ]
         [ span []

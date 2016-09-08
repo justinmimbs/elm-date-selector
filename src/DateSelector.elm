@@ -76,37 +76,49 @@ classNameFromState state =
     Selected -> "date-selector--selected"
 
 
-view : Date -> Date -> Date -> Html Date
-view min max selected =
+view : Date -> Date -> Maybe Date -> Html Date
+view min max maybeSelected =
   div
     [ classList
         [ ("date-selector", True)
         , ("date-selector--scrollable-year", year max - year min >= 12)
         ]
     ]
-    [ div [] [ viewYearList min max selected ]
-    , div [] [ viewMonthList min max selected ]
-    , div [] [ viewDateTable min max selected ]
+    [ div []
+        [ viewYearList min max maybeSelected ]
+    , div []
+        [ maybeSelected
+          |> Maybe.map (viewMonthList min max)
+          |> Maybe.withDefault viewMonthListDisabled
+        ]
+    , div []
+        [ maybeSelected
+          |> Maybe.map (viewDateTable min max)
+          |> Maybe.withDefault (viewDateTableDisabled min)
+        ]
     ]
     |> App.map (Date.clamp min max)
 
 
-viewYearList : Date -> Date -> Date -> Html Date
-viewYearList min max selected =
+viewYearList : Date -> Date -> Maybe Date -> Html Date
+viewYearList min max maybeSelected =
   let
     years = [ year min .. year max ]
-    selectedYear = year selected
+    isSelectedYear =
+      maybeSelected
+        |> Maybe.map (\selected -> (==) (year selected))
+        |> Maybe.withDefault (\_ -> False)
   in
     ol
       [ on "click" <|
         Json.Decode.map
-          (dateWithYear selected)
+          (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromCalendarDate (year min) Jan 1)))
           (Json.Decode.at ["target", "year"] Json.Decode.int)
       ]
       (years |> List.map (\y ->
         let
           state =
-            if y == selectedYear then
+            if isSelectedYear y then
               Selected
             else
               Normal
@@ -159,9 +171,27 @@ viewMonthList min max selected =
             [ text name ]))
 
 
+viewMonthListDisabled : Html a
+viewMonthListDisabled =
+  ol []
+    (monthNames |> List.map (\name ->
+      li
+        [ class <| classNameFromState Disabled ]
+        [ text name ]))
+
+
 dayOfWeekNames : List String
 dayOfWeekNames =
   [ "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" ]
+
+
+viewDayOfWeekHeader : Html a
+viewDayOfWeekHeader =
+  thead []
+    [ tr []
+        (dayOfWeekNames |> List.map (\name ->
+          th [] [ text name ]))
+    ]
 
 
 viewDateTable : Date -> Date -> Date -> Html Date
@@ -170,11 +200,7 @@ viewDateTable min max selected =
     weeks = monthDates (year selected) (month selected) |> chunk 7
   in
     table []
-      [ thead []
-          [ tr []
-              (dayOfWeekNames |> List.map (\name ->
-                th [] [ text name ]))
-          ]
+      [ viewDayOfWeekHeader
       , tbody
           [ on "click" <|
               Json.Decode.map
@@ -203,4 +229,22 @@ viewDateTable min max selected =
                       else
                         [])
                     [ text (day date |> toString) ]))))
+      ]
+
+
+viewDateTableDisabled : Date -> Html a
+viewDateTableDisabled date =
+  let
+    weeks = monthDates (year date) (month date) |> chunk 7
+    disabled = classNameFromState Disabled
+  in
+    table []
+      [ viewDayOfWeekHeader
+      , tbody []
+          (weeks |> List.map (\week ->
+            tr []
+              (week |> List.map (\date ->
+                td
+                  [ class disabled ]
+                  [ text (day date |> toString) ]))))
       ]

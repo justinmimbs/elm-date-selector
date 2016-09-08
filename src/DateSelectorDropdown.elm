@@ -9,12 +9,12 @@ import Html.App as App
 import Html.Attributes exposing (class, readonly, value)
 
 
-view : msg -> (Date -> msg) -> Bool -> Date -> Date -> Date -> Html msg
+view : msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
 view =
   viewWithButton defaultViewButton
 
 
-viewWithButton : (Bool -> Date -> Html a) -> msg -> (Date -> msg) -> Bool -> Date -> Date -> Date -> Html msg
+viewWithButton : (Bool -> Maybe Date -> Html a) -> msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
 viewWithButton viewButton toggle mapSelect isOpen min max selected =
   let
     dateSelectorView =
@@ -29,10 +29,10 @@ viewWithButton viewButton toggle mapSelect isOpen min max selected =
       dateSelectorView
 
 
-defaultViewButton : Bool -> Date -> Html a
-defaultViewButton isOpen date =
+defaultViewButton : Bool -> Maybe Date -> Html a
+defaultViewButton isOpen maybeDate =
   input
-    [ value <| Date.toFormattedString "yyyy-MM-dd" date
+    [ value (maybeDate |> Maybe.map (Date.toFormattedString "yyyy-MM-dd") |> Maybe.withDefault "")
     , readonly True
     ]
     []
