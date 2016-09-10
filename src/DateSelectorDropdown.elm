@@ -1,6 +1,6 @@
 module DateSelectorDropdown exposing (view, viewWithButton)
 
-{-| UI views for displaying a DateSelector from a dropdown.
+{-| Create a dropdown that shows a `DateSelector` view.
 
 ## Default Button
 @docs view
@@ -19,9 +19,9 @@ import Html.Attributes exposing (class, readonly, value)
 import Html.Events exposing (onClick)
 
 
-{-| View a button that displays a DateSelector below itself when clicked. The
-default button is a read-only text input that displays the selected date in
-"yyyy-mm-dd" format.
+{-| Create a dropdown button that displays a `DateSelector` view below itself
+when clicked. The default button is a read-only text input that displays the
+selected date in "yyyy-mm-dd" format.
 
     DateSelectorDropdown.view
       toggleDropdownMsg

@@ -1,6 +1,6 @@
 module DateSelector exposing (view)
 
-{-| A UI view for selecting dates.
+{-| Create a user interface for selecting dates.
 
 @docs view
 -}
@@ -81,7 +81,7 @@ classNameFromState state =
     Selected -> "date-selector--selected"
 
 
-{-| View a date selector by providing the minimum and maximum selectable
+{-| Create a date selector by providing the minimum and maximum selectable
 dates, and maybe a selected date.
 
     DateSelector.view
@@ -89,8 +89,9 @@ dates, and maybe a selected date.
       maxDate
       maybeSelectedDate
 
-The resulting Html produces Date messages when the user selects another date.
-The Dates produced will always be within the bounds provided.
+The resulting `Html` produces `Date` messages only when the user selects
+another date. The `Date` values produced will always be within the bounds
+provided.
 -}
 view : Date -> Date -> Maybe Date -> Html Date
 view min max maybeSelected =
