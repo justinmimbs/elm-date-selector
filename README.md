@@ -29,10 +29,10 @@ The `DateSelectorDropdown.viewWithButton` function allows you to use your own bu
 
 ## Examples
 
-  1. Standalone DateSelector / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/1-standalone.elm)
-  2. DateSelectorDropdown / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/2-dropdown.elm)
-  3. DateSelectorDropdown with custom button / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/3-custom-button.elm)
-  4. Multiple DateSelectorDropdowns / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/4-multiple-dropdowns.elm)
+  1. [Standalone DateSelector](https://justinmimbs.github.io/elm-date-selector/1-standalone.html) / [source](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/1-standalone.elm)
+  2. [DateSelectorDropdown](https://justinmimbs.github.io/elm-date-selector/2-dropdown.html) / [source](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/2-dropdown.elm)
+  3. [DateSelectorDropdown with custom button](https://justinmimbs.github.io/elm-date-selector/3-custom-button.html) / [source](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/3-custom-button.elm)
+  4. [Multiple DateSelectorDropdowns](https://justinmimbs.github.io/elm-date-selector/4-multiple-dropdowns.html) / [source](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/4-multiple-dropdowns.elm)
 
 ## CSS
 
