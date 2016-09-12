@@ -82,45 +82,44 @@ classNameFromState state =
 
 
 {-| Create a date selector by providing the minimum and maximum selectable
-dates, and maybe a selected date.
+dates, and a selected date if there is one.
 
     DateSelector.view
-      minDate
-      maxDate
-      maybeSelectedDate
+      minimum
+      maximum
+      selected
 
-The resulting `Html` produces `Date` messages only when the user selects
-another date. The `Date` values produced will always be within the bounds
-provided.
+The resulting `Html` produces `Date` messages when the user selects a date. The
+`Date` values produced will always be within the bounds provided.
 -}
 view : Date -> Date -> Maybe Date -> Html Date
-view min max maybeSelected =
+view minimum maximum maybeSelected =
   div
     [ classList
         [ ("date-selector", True)
-        , ("date-selector--scrollable-year", year max - year min >= 12)
+        , ("date-selector--scrollable-year", year maximum - year minimum >= 12)
         ]
     ]
     [ div []
-        [ viewYearList min max maybeSelected ]
+        [ viewYearList minimum maximum maybeSelected ]
     , div []
         [ maybeSelected
-          |> Maybe.map (viewMonthList min max)
+          |> Maybe.map (viewMonthList minimum maximum)
           |> Maybe.withDefault viewMonthListDisabled
         ]
     , div []
         [ maybeSelected
-          |> Maybe.map (viewDateTable min max)
-          |> Maybe.withDefault (viewDateTableDisabled min)
+          |> Maybe.map (viewDateTable minimum maximum)
+          |> Maybe.withDefault (viewDateTableDisabled minimum)
         ]
     ]
-    |> App.map (Date.clamp min max)
+    |> App.map (Date.clamp minimum maximum)
 
 
 viewYearList : Date -> Date -> Maybe Date -> Html Date
-viewYearList min max maybeSelected =
+viewYearList minimum maximum maybeSelected =
   let
-    years = [ year min .. year max ]
+    years = [ year minimum .. year maximum ]
     isSelectedYear =
       maybeSelected
         |> Maybe.map (\selected -> (==) (year selected))
@@ -129,7 +128,7 @@ viewYearList min max maybeSelected =
     ol
       [ on "click" <|
         Json.Decode.map
-          (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromCalendarDate (year min) Jan 1)))
+          (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromCalendarDate (year minimum) Jan 1)))
           (Json.Decode.at ["target", "year"] Json.Decode.int)
       ]
       (years |> List.map (\y ->
@@ -156,10 +155,10 @@ monthNames =
 
 
 viewMonthList : Date -> Date -> Date -> Html Date
-viewMonthList min max selected =
+viewMonthList minimum maximum selected =
   let
-    first = if year selected == year min then Date.monthNumber min else 1
-    last = if year selected == year max then Date.monthNumber max else 12
+    first = if year selected == year minimum then Date.monthNumber minimum else 1
+    last = if year selected == year maximum then Date.monthNumber maximum else 12
   in
     ol
       [ on "click" <|
@@ -212,7 +211,7 @@ viewDayOfWeekHeader =
 
 
 viewDateTable : Date -> Date -> Date -> Html Date
-viewDateTable min max selected =
+viewDateTable minimum maximum selected =
   let
     weeks = monthDates (year selected) (month selected) |> chunk 7
   in
@@ -231,7 +230,7 @@ viewDateTable min max selected =
                   state =
                     if Date.equal date selected then
                       Selected
-                    else if not (Date.isBetween min max date) then
+                    else if not (Date.isBetween minimum maximum date) then
                       Disabled
                     else if month date /= month selected then
                       Dimmed

@@ -8,7 +8,7 @@ The core view is provided in the `DateSelector` module, and a dropdown view is a
 
 ![DateSelector](http://justinmimbs.com/etcetera/date-selector.png)
 
-The `DateSelector.view` function requires only `Date` values (for the _minimum_, _maximum_, and _selected_ dates) and creates `Html` that produces `Date` messages; a side-effect of the UI design is that no "internal" state is required. You can map its `Date` messages to your own message type.
+The `DateSelector.view` function takes only `Date` values (for the _minimum_, _maximum_, and _selected_ dates; a side-effect of the UI design is that no "internal" state is needed) and creates `Html` that produces `Date` messages. You can map its `Date` messages to your own message type.
 
 ```elm
 type Msg = SelectDate Date | ...
@@ -23,17 +23,17 @@ view =
 
 ![DateSelectorDropdown](http://justinmimbs.com/etcetera/date-selector-dropdown.png)
 
-To use the `DateSelectorDropdown.view` function, the only additional state you must provide is a `Bool` indicating whether or not the dropdown is open. The function also takes two message constructors so that you can receive appropriate messages when a user wants to toggle the dropdown and when they want to select a date. 
+The `DateSelectorDropdown.view` function creates a button and a `DateSelector` view when it's open. You must provide a `Bool` indicating whether or not the dropdown is open, as well as constructors for the messages you want to receive when a user toggles the dropdown and when they select a date.
 
-The dropdown can be displayed from a custom button using the `viewWithButton` function. See the [docs]() and the examples listed below for more detail.
+The `DateSelectorDropdown.viewWithButton` function allows you to use your own button with the dropdown. See the [docs](http://package.elm-lang.org/packages/justinmimbs/elm-date-selector/latest/DateSelectorDropdown) and the examples listed below for more detail.
 
 ## Examples
 
-  1. [Standalone DateSelector]()
-  2. [DateSelectorDropdown]()
-  3. [DateSelectorDropdown with custom button]()
-  4. [Multiple DateSelectorDropdowns]()
+  1. Standalone DateSelector / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/1-standalone.elm)
+  2. DateSelectorDropdown / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/2-dropdown.elm)
+  3. DateSelectorDropdown with custom button / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/3-custom-button.elm)
+  4. Multiple DateSelectorDropdowns / [code](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/4-multiple-dropdowns.elm)
 
 ## CSS
 
-The styles are available as a CSS file [here](https://github.com/justinmimbs/elm-date-selector/examples/date-selector-dropdown.css). This file does not declare a font-family, and all sizes are specified in em units, allowing font styles to be inherited. Similarly, the default button for `DateSelectorDropdown.view` is an unstyled `<input>`, allowing its look to be inherited.
+The styles are available as a CSS file [here](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/date-selector.css). This file does not declare a font-family, and all sizes are specified in em units, allowing font styles to be inherited. Similarly, the default button for `DateSelectorDropdown.view` is an unstyled `<input>`, allowing its look to be inherited.

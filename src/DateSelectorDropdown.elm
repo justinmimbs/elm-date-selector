@@ -1,6 +1,7 @@
 module DateSelectorDropdown exposing (view, viewWithButton)
 
-{-| Create a dropdown that shows a `DateSelector` view.
+{-| Create a button that displays a `DateSelector` view below itself when
+clicked.
 
 ## Default Button
 @docs view
@@ -19,44 +20,50 @@ import Html.Attributes exposing (class, readonly, value)
 import Html.Events exposing (onClick)
 
 
-{-| Create a dropdown button that displays a `DateSelector` view below itself
-when clicked. The default button is a read-only text input that displays the
-selected date in "yyyy-mm-dd" format.
+{-| The default button is a read-only text input that displays the selected
+date in "yyyy-mm-dd" format.
+
+The first argument is the message you want to receive to toggle the dropdown;
+the second argument constructs a message from the user-selected date. The third
+argument indicates whether or not the `DateSelector` view should be displayed.
+The final three arguments are used to create the `DateSelector` view if
+necessary.
 
     DateSelectorDropdown.view
       toggleDropdownMsg
       toSelectDateMsg
       isOpen
-      minDate
-      maxDate
-      maybeSelectedDate
+      minimum
+      maximum
+      selected
 -}
 view : msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
 view toggle =
   viewWithButton (defaultViewButton toggle) toggle
 
 
-{-| This function is almost the same as `view`, but it takes one more
-argument, a function to create the button view, as its first argument. The
-function to create the button view takes two arguments, _isOpen_ and
-_maybeSelectedDate_. The custom button is responsible for producing any `msg`
-needed to open the dropdown.
+{-| This function is almost the same as `view`, but takes, as its first
+argument, the function to create the custom button. The function to create the
+custom button will receive _isOpen_ and _selected_, and the `Html` it creates
+is responsible for producing any `msg` needed to open the dropdown.
 
     DateSelectorDropdown.viewWithButton
       viewButton
       closeDropdownMsg
       toSelectDateMsg
       isOpen
-      minDate
-      maxDate
-      maybeSelectedDate
+      minimum
+      maximum
+      selected
+
+A full example is available [here](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/3-custom-button.elm).
 -}
 viewWithButton : (Bool -> Maybe Date -> Html msg) -> msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
-viewWithButton viewButton close toSelect isOpen min max selected =
+viewWithButton viewButton close toSelect isOpen minimum maximum selected =
   let
     dateSelectorView =
       if isOpen then
-        Just (DateSelector.view min max selected |> App.map toSelect)
+        Just (DateSelector.view minimum maximum selected |> App.map toSelect)
       else
         Nothing
   in

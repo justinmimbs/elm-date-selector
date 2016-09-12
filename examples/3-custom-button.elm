@@ -25,8 +25,8 @@ main =
 -- model
 
 type alias Model =
-  { min : Date
-  , max : Date
+  { minimum : Date
+  , maximum : Date
   , selected : Maybe Date
   , isOpen : Bool
   }
@@ -51,7 +51,7 @@ update msg model =
 -- view
 
 view : Model -> Html Msg
-view { min, max, selected, isOpen } =
+view { minimum, maximum, selected, isOpen } =
   div []
     [ Html.node "style" []
         [ text <| String.join " "
@@ -65,8 +65,8 @@ view { min, max, selected, isOpen } =
         Toggle
         (Select << Just)
         isOpen
-        min
-        max
+        minimum
+        maximum
         selected
     ]
 
