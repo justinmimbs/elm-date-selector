@@ -54,7 +54,7 @@ view { min, max, selected, isOpen } =
     [ Html.node "style" []
         [ text <| String.join " "
             [ "@import url(./examples.css);"
-            , "@import url(./date-selector-dropdown.css);"
+            , "@import url(./date-selector.css);"
             ]
         ]
     , h1 [] [ text <| Date.toFormattedString "EEE MMM d, yyyy" selected ]

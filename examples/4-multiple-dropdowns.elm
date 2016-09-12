@@ -1,9 +1,9 @@
 import Date exposing (Date, Month(..))
 import Date.Extra as Date exposing (Interval(Year, Month, Day))
 import DateSelectorDropdown
-import Html exposing (Html, div, text, h1, br, label)
+import Html exposing (Html, div, text, h1, label)
 import Html.App as App
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class)
 import String
 
 
@@ -47,7 +47,8 @@ init today =
 
 type Msg
   = Select DateField Date
-  | Toggle DateField
+  | OpenDropdown DateField
+  | CloseDropdown
 
 
 update : Msg -> Model -> Model
@@ -59,13 +60,11 @@ update msg model =
         To        -> { model | to = date }
         Birthdate -> { model | birthdate = Just date }
 
-    Toggle dateField ->
-      { model
-      | openDateField =
-          case model.openDateField of
-            Just _  -> Nothing
-            Nothing -> Just dateField
-      }
+    OpenDropdown dateField ->
+      { model | openDateField = Just dateField }
+
+    CloseDropdown ->
+      { model | openDateField = Nothing }
 
 
 -- view
@@ -76,26 +75,27 @@ view { today, from, to, birthdate, openDateField } =
     [ Html.node "style" []
         [ text <| String.join " "
             [ "@import url(./examples.css);"
-            , "@import url(./date-selector-dropdown.css);"
+            , "@import url(./date-selector.css);"
             ]
         ]
+
     , div
-        [ class "column" ]
-        [ label [] [ text "From" ]
-        , viewDateSelector From openDateField
-            (Date.add Year -10 today)
-            to
-            (Just from)
+        [ class "columns" ]
+        [ div []
+            [ label [] [ text "From" ]
+            , viewDateSelector From openDateField
+                (Date.add Year -10 today)
+                to
+                (Just from)
+            ]
+        , div []
+            [ label [] [ text "To" ]
+            , viewDateSelector To openDateField
+                from
+                (Date.add Year 1 today)
+                (Just to)
+            ]
         ]
-    , div
-        [ class "column" ]
-        [ label [] [ text "To" ]
-        , viewDateSelector To openDateField
-            from
-            (Date.add Year 1 today)
-            (Just to)
-        ]
-    , div [ style [ ("clear", "both") ] ] []
 
     , label [] [ text "Birthdate" ]
     , viewDateSelector Birthdate openDateField
@@ -107,7 +107,10 @@ view { today, from, to, birthdate, openDateField } =
 
 viewDateSelector : DateField -> (Maybe DateField) -> Date -> Date -> Maybe Date -> Html Msg
 viewDateSelector dateField openDateField =
-  DateSelectorDropdown.view
-    (Toggle dateField)
-    (Select dateField)
-    (openDateField |> Maybe.map ((==) dateField) |> Maybe.withDefault False)
+  let
+    isOpen = openDateField |> Maybe.map ((==) dateField) |> Maybe.withDefault False
+  in
+    DateSelectorDropdown.view
+      (if isOpen then CloseDropdown else OpenDropdown dateField)
+      (Select dateField)
+      isOpen

@@ -27,7 +27,7 @@ main =
 type alias Model =
   { min : Date
   , max : Date
-  , maybeSelected : Maybe Date
+  , selected : Maybe Date
   , isOpen : Bool
   }
 
@@ -43,7 +43,7 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     Select maybeDate ->
-      { model | maybeSelected = maybeDate }
+      { model | selected = maybeDate }
     Toggle ->
       { model | isOpen = not model.isOpen }
 
@@ -51,16 +51,15 @@ update msg model =
 -- view
 
 view : Model -> Html Msg
-view { min, max, maybeSelected, isOpen } =
+view { min, max, selected, isOpen } =
   div []
     [ Html.node "style" []
         [ text <| String.join " "
             [ "@import url(./examples.css);"
-            , "@import url(./date-selector-dropdown.css);"
-            , "@import url(./custom-button.css);"
+            , "@import url(./date-selector.css);"
             ]
         ]
-    , h1 [] [ text (maybeSelected |> Maybe.map (Date.toFormattedString "'Just' (EEE MMM d, yyyy)") |> Maybe.withDefault "Nothing") ]
+    , h1 [] [ text (selected |> Maybe.map (Date.toFormattedString "'Just' (EEE MMM d, yyyy)") |> Maybe.withDefault "Nothing") ]
     , DateSelectorDropdown.viewWithButton
         viewCustomButton
         Toggle
@@ -68,12 +67,12 @@ view { min, max, maybeSelected, isOpen } =
         isOpen
         min
         max
-        maybeSelected
+        selected
     ]
 
 
 viewCustomButton : Bool -> Maybe Date -> Html Msg
-viewCustomButton isOpen maybeDate =
+viewCustomButton isOpen selected =
   div
     [ classList
         [ ("date-selector-dropdown-button", True)
@@ -83,9 +82,9 @@ viewCustomButton isOpen maybeDate =
     ]
     [ div
         [ class "date-selector-dropdown-button--date" ]
-        [ text (maybeDate |> Maybe.map (Date.toFormattedString "yyyy MMM d") |> Maybe.withDefault "") ]
+        [ text (selected |> Maybe.map (Date.toFormattedString "yyyy MMM d") |> Maybe.withDefault "") ]
 
-    , case maybeDate of
+    , case selected of
         Just _ ->
           div
             [ class "date-selector-dropdown-button--clear"
