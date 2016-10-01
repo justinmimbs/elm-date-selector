@@ -13,7 +13,7 @@ main =
       Model
         (Date.fromCalendarDate 2011 Mar 15)
         (Date.fromCalendarDate 2017 Sep 15)
-        (Date.fromCalendarDate 2016 Sep 15)
+        (Date.fromParts 2016 Sep 15 9 0 0 0)
   , view = view
   , update = update
   }

@@ -228,7 +228,7 @@ viewDateTable minimum maximum selected =
               (week |> List.map (\date ->
                 let
                   state =
-                    if Date.equal date selected then
+                    if Date.equalBy Day date selected then
                       Selected
                     else if not (Date.isBetween minimum maximum date) then
                       Disabled
