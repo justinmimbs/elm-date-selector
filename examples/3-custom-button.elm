@@ -11,15 +11,15 @@ import String
 main : Program Never
 main =
   App.beginnerProgram
-  { model =
-      Model
-        (Date.fromCalendarDate 2011 Mar 15)
-        (Date.fromCalendarDate 2017 Sep 15)
-        (Just <| Date.fromCalendarDate 2016 Sep 15)
-        False
-  , view = view
-  , update = update
-  }
+    { model =
+        Model
+          (Date.fromCalendarDate 2011 Mar 15)
+          (Date.fromCalendarDate 2017 Sep 15)
+          (Just <| Date.fromCalendarDate 2016 Sep 15)
+          False
+    , view = view
+    , update = update
+    }
 
 
 -- model
@@ -44,6 +44,7 @@ update msg model =
   case msg of
     Select maybeDate ->
       { model | selected = maybeDate }
+
     Toggle ->
       { model | isOpen = not model.isOpen }
 
@@ -78,7 +79,6 @@ viewCustomButton isOpen selected =
         [ ("date-selector-dropdown-button", True)
         , ("date-selector-dropdown-button--open", isOpen)
         ]
-
     ]
     [ div
         [ class "date-selector-dropdown-button--date" ]

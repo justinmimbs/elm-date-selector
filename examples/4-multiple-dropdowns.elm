@@ -10,10 +10,10 @@ import String
 main : Program Never
 main =
   App.beginnerProgram
-  { model = init <| Date.fromCalendarDate 2016 Sep 15
-  , view = view
-  , update = update
-  }
+    { model = init <| Date.fromCalendarDate 2016 Sep 15
+    , view = view
+    , update = update
+    }
 
 
 -- model
@@ -78,7 +78,6 @@ view { today, from, to, birthdate, openDateField } =
             , "@import url(./date-selector.css);"
             ]
         ]
-
     , div
         [ class "columns" ]
         [ div []
@@ -96,7 +95,6 @@ view { today, from, to, birthdate, openDateField } =
                 (Just to)
             ]
         ]
-
     , label [] [ text "Birthdate" ]
     , viewDateSelector Birthdate openDateField
         (Date.add Year -110 today)
