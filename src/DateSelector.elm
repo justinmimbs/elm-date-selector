@@ -104,13 +104,13 @@ view minimum maximum maybeSelected =
         [ viewYearList minimum maximum maybeSelected ]
     , div []
         [ maybeSelected
-          |> Maybe.map (viewMonthList minimum maximum)
-          |> Maybe.withDefault viewMonthListDisabled
+            |> Maybe.map (viewMonthList minimum maximum)
+            |> Maybe.withDefault viewMonthListDisabled
         ]
     , div []
-        [ maybeSelected
-          |> Maybe.map (viewDateTable minimum maximum)
-          |> Maybe.withDefault (viewDateTableDisabled minimum)
+        [ case maybeSelected of
+            Just selected -> viewDateTable minimum maximum selected
+            Nothing       -> viewDateTableDisabled minimum
         ]
     ]
     |> App.map (Date.clamp minimum maximum)
