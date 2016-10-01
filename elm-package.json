@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "A user interface for selecting dates",
     "repository": "https://github.com/justinmimbs/elm-date-selector.git",
     "license": "BSD3",
