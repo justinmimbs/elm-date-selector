@@ -15,7 +15,6 @@ import Date.Extra as Date
 import DateSelector
 import Dropdown
 import Html exposing (Html, input)
-import Html.App as App
 import Html.Attributes exposing (class, readonly, value)
 import Html.Events exposing (onClick)
 
@@ -63,7 +62,7 @@ viewWithButton viewButton close toSelect isOpen minimum maximum selected =
   let
     dateSelectorView =
       if isOpen then
-        Just (DateSelector.view minimum maximum selected |> App.map toSelect)
+        Just (DateSelector.view minimum maximum selected |> Html.map toSelect)
       else
         Nothing
   in

@@ -9,19 +9,18 @@ import Date exposing (Date, Month(..), year, month, day)
 import Date.Extra as Date exposing (Interval(..))
 import Date.Extra.Facts exposing (isLeapYear, daysInMonth, monthFromMonthNumber)
 import Html exposing (Html, text, div, table, thead, tbody, tr, th, td, ol, li)
-import Html.App as App
 import Html.Attributes exposing (class, classList, property)
 import Html.Events exposing (on)
 import Json.Decode
 import Json.Encode
 
 
-chunk : Int -> List a -> List (List a)
-chunk n list =
+groupsOf : Int -> List a -> List (List a)
+groupsOf n list =
   if List.isEmpty list then
     []
   else
-    List.take n list :: chunk n (List.drop n list)
+    List.take n list :: groupsOf n (List.drop n list)
 
 
 isBetween : comparable -> comparable -> comparable -> Bool
@@ -113,13 +112,20 @@ view minimum maximum maybeSelected =
             Nothing       -> viewDateTableDisabled minimum
         ]
     ]
-    |> App.map (Date.clamp minimum maximum)
+    |> Html.map (Date.clamp minimum maximum)
 
 
 viewYearList : Date -> Date -> Maybe Date -> Html Date
 viewYearList minimum maximum maybeSelected =
   let
-    years = [ year minimum .. year maximum ]
+    isInvertedMinMax = Date.compare minimum maximum == GT
+    years =
+      if isInvertedMinMax then
+        [ maybeSelected |> Maybe.withDefault minimum |> year ]
+      else
+        List.range (year minimum) (year maximum)
+
+    isSelectedYear : Int -> Bool
     isSelectedYear =
       maybeSelected
         |> Maybe.map (\selected -> (==) (year selected))
@@ -129,23 +135,26 @@ viewYearList minimum maximum maybeSelected =
       [ on "click" <|
         Json.Decode.map
           (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromCalendarDate (year minimum) Jan 1)))
-          (Json.Decode.at ["target", "year"] Json.Decode.int)
+          (Json.Decode.at [ "target", "year" ] Json.Decode.int)
       ]
       (years |> List.map (\y ->
         let
           state =
             if isSelectedYear y then
               Selected
+            else if isInvertedMinMax then
+              Disabled
             else
               Normal
         in
           li
-            ([ class <| classNameFromState state ]
-              ++
-              if isSelectable state then
-                [ property "year" <| Json.Encode.int y ]
-              else
-                [])
+            [ class <| classNameFromState state
+            , property "year" <|
+                if isSelectable state then
+                  Json.Encode.int y
+                else
+                  Json.Encode.null
+            ]
             [ text (toString y) ]))
 
 
@@ -157,6 +166,7 @@ monthNames =
 viewMonthList : Date -> Date -> Date -> Html Date
 viewMonthList minimum maximum selected =
   let
+    isInvertedMinMax = Date.compare minimum maximum == GT
     first = if year selected == year minimum then Date.monthNumber minimum else 1
     last = if year selected == year maximum then Date.monthNumber maximum else 12
   in
@@ -172,18 +182,19 @@ viewMonthList minimum maximum selected =
           state =
             if n == Date.monthNumber selected then
               Selected
-            else if not (isBetween first last n) then
+            else if not (isBetween first last n) || isInvertedMinMax then
               Disabled
             else
               Normal
         in
           li
-            ([ class <| classNameFromState state ]
-              ++
+            [ class <| classNameFromState state
+            , property "monthNumber" <|
               if isSelectable state then
-                [ property "monthNumber" <| Json.Encode.int n ]
+                Json.Encode.int n
               else
-                [])
+                Json.Encode.null
+            ]
             [ text name ]))
 
 
@@ -213,7 +224,8 @@ viewDayOfWeekHeader =
 viewDateTable : Date -> Date -> Date -> Html Date
 viewDateTable minimum maximum selected =
   let
-    weeks = monthDates (year selected) (month selected) |> chunk 7
+    isInvertedMinMax = Date.compare minimum maximum == GT
+    weeks = monthDates (year selected) (month selected) |> groupsOf 7
   in
     table []
       [ viewDayOfWeekHeader
@@ -230,7 +242,7 @@ viewDateTable minimum maximum selected =
                   state =
                     if Date.equalBy Day date selected then
                       Selected
-                    else if not (Date.isBetween minimum maximum date) then
+                    else if not (Date.isBetween minimum maximum date) || isInvertedMinMax then
                       Disabled
                     else if month date /= month selected then
                       Dimmed
@@ -238,12 +250,13 @@ viewDateTable minimum maximum selected =
                       Normal
                 in
                   td
-                    ([ class <| classNameFromState state ]
-                      ++
-                      if isSelectable state then
-                        [ property "time" <| Json.Encode.float (Date.toTime date) ]
-                      else
-                        [])
+                    [ class <| classNameFromState state
+                    , property "time" <|
+                        if isSelectable state then
+                          Json.Encode.float (Date.toTime date)
+                        else
+                          Json.Encode.null
+                    ]
                     [ text (day date |> toString) ]))))
       ]
 
@@ -251,7 +264,7 @@ viewDateTable minimum maximum selected =
 viewDateTableDisabled : Date -> Html a
 viewDateTableDisabled date =
   let
-    weeks = monthDates (year date) (month date) |> chunk 7
+    weeks = monthDates (year date) (month date) |> groupsOf 7
     disabled = classNameFromState Disabled
   in
     table []

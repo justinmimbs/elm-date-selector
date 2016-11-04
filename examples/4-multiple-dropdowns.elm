@@ -2,14 +2,13 @@ import Date exposing (Date, Month(..))
 import Date.Extra as Date exposing (Interval(Year, Month, Day))
 import DateSelectorDropdown
 import Html exposing (Html, div, text, h1, label)
-import Html.App as App
 import Html.Attributes exposing (class)
 import String
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-  App.beginnerProgram
+  Html.beginnerProgram
     { model = init <| Date.fromCalendarDate 2016 Sep 15
     , view = view
     , update = update

@@ -16,7 +16,7 @@ type Msg = SelectDate Date | ...
 view : Html Msg
 view =
   DateSelector.view minDate maxDate (Just selectedDate)
-    |> Html.App.map SelectDate
+    |> Html.map SelectDate
 ```
 
 ## DateSelectorDropdown
