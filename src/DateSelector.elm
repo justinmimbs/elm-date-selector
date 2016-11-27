@@ -79,7 +79,7 @@ type State
 
 isSelectable : State -> Bool
 isSelectable state =
-    state == Normal || state == Dimmed
+    state == Normal || state == Dimmed || state == Marked
 
 
 classNameFromState : State -> String
@@ -393,12 +393,12 @@ viewDateTableWithMarked minimum maximum selected markedDates =
                                                 state =
                                                     if Date.equalBy Day date selected then
                                                         Selected
-                                                    else if List.member date markedDates then
-                                                        Marked
                                                     else if not (Date.isBetween minimum maximum date) || isInvertedMinMax then
                                                         Disabled
                                                     else if month date /= month selected then
                                                         Dimmed
+                                                    else if List.member date markedDates then
+                                                        Marked
                                                     else
                                                         Normal
                                             in
