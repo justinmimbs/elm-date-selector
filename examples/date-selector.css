@@ -28,6 +28,9 @@ DateSelector
 .date-selector--selected,
 .date-selector--selected.date-selector--selected:hover { background: #69b3ff; color: #ffffff; }
 
+.date-selector--marked,
+.date-selector--marked { background: #e9b3ff; color: #ffffff; }
+
 .date-selector--dimmed { color: #aaaaaa; }
 
 .date-selector--disabled,

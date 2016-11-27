@@ -1,7 +1,7 @@
 {
     "version": "1.0.2",
-    "summary": "A user interface for selecting dates",
-    "repository": "https://github.com/justinmimbs/elm-date-selector.git",
+    "summary": "A user interface for selecting dates(fork)",
+    "repository": "https://github.com/jackalcooper/elm-date-selector.git",
     "license": "BSD3",
     "source-directories": [
         "src"
