@@ -48,7 +48,7 @@ view : Model -> Html Date
 view { minimum, maximum, selected } =
     let
         markedDates =
-            [ (Date.fromCalendarDate 2016 Sep 16) ]
+            [ (Date.fromCalendarDate 2016 Sep 16), (Date.fromCalendarDate 2016 Sep 17) ]
     in
         div []
             [ Html.node "style"
