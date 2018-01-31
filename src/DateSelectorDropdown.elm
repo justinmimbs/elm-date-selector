@@ -3,11 +3,16 @@ module DateSelectorDropdown exposing (view, viewWithButton)
 {-| Create a button that displays a `DateSelector` view below itself when
 clicked.
 
+
 ## Default Button
+
 @docs view
 
+
 ## Custom Button
+
 @docs viewWithButton
+
 -}
 
 import Date exposing (Date)
@@ -35,10 +40,11 @@ necessary.
       minimum
       maximum
       selected
+
 -}
 view : msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
 view toggle =
-  viewWithButton (defaultViewButton toggle) toggle
+    viewWithButton (defaultViewButton toggle) toggle
 
 
 {-| This function is almost the same as `view`, but takes, as its first
@@ -56,27 +62,28 @@ is responsible for producing any `msg` needed to open the dropdown.
       selected
 
 A full example is available [here](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/3-custom-button.elm).
+
 -}
 viewWithButton : (Bool -> Maybe Date -> Html msg) -> msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
 viewWithButton viewButton close toSelect isOpen minimum maximum selected =
-  let
-    dateSelectorView =
-      if isOpen then
-        Just (DateSelector.view minimum maximum selected |> Html.map toSelect)
-      else
-        Nothing
-  in
+    let
+        dateSelectorView =
+            if isOpen then
+                Just (DateSelector.view minimum maximum selected |> Html.map toSelect)
+            else
+                Nothing
+    in
     Dropdown.view
-      close
-      (viewButton isOpen selected)
-      dateSelectorView
+        close
+        (viewButton isOpen selected)
+        dateSelectorView
 
 
 defaultViewButton : msg -> Bool -> Maybe Date -> Html msg
 defaultViewButton toggle isOpen maybeDate =
-  input
-    [ value (maybeDate |> Maybe.map (Date.toFormattedString "yyyy-MM-dd") |> Maybe.withDefault "")
-    , readonly True
-    , onClick toggle
-    ]
-    []
+    input
+        [ value (maybeDate |> Maybe.map (Date.toFormattedString "yyyy-MM-dd") |> Maybe.withDefault "")
+        , readonly True
+        , onClick toggle
+        ]
+        []
