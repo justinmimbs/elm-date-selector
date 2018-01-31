@@ -1,7 +1,6 @@
 module Main exposing (..)
 
-import Date exposing (Date, Month(..))
-import Date.Extra as Date exposing (Interval(Day, Month, Year))
+import Date.RataDie as Date exposing (Date, Interval(Month), Month(..), Unit(Days, Years))
 import DateSelectorDropdown
 import Html exposing (Html, div, h1, label, text)
 import Html.Attributes exposing (class)
@@ -41,7 +40,7 @@ init today =
     Model
         today
         (Date.floor Month today)
-        (Date.ceiling Month today |> Date.add Day -1)
+        (Date.ceiling Month today |> Date.add Days -1)
         Nothing
         Nothing
 
@@ -98,7 +97,7 @@ view { today, from, to, birthdate, openDateField } =
                 [ label [] [ text "From" ]
                 , viewDateSelector From
                     openDateField
-                    (Date.add Year -10 today)
+                    (Date.add Years -10 today)
                     to
                     (Just from)
                 ]
@@ -107,14 +106,14 @@ view { today, from, to, birthdate, openDateField } =
                 , viewDateSelector To
                     openDateField
                     from
-                    (Date.add Year 1 today)
+                    (Date.add Years 1 today)
                     (Just to)
                 ]
             ]
         , label [] [ text "Birthdate" ]
         , viewDateSelector Birthdate
             openDateField
-            (Date.add Year -110 today)
+            (Date.add Years -110 today)
             today
             birthdate
         ]

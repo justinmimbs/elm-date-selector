@@ -6,9 +6,7 @@ module DateSelector exposing (view)
 
 -}
 
-import Date exposing (Date, Month(..), day, month, year)
-import Date.Extra as Date exposing (Interval(..))
-import Date.Extra.Facts exposing (daysInMonth, isLeapYear, monthFromMonthNumber)
+import Date.RataDie as Date exposing (Date, Interval(Day, Monday), Month(..), Unit(Days))
 import Html exposing (Html, div, li, ol, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, classList, property)
 import Html.Events exposing (on)
@@ -33,36 +31,27 @@ monthDates : Int -> Month -> List Date
 monthDates y m =
     let
         start =
-            Date.floor Monday <| Date.fromCalendarDate y m 1
+            Date.firstOfMonth y m |> Date.floor Monday
     in
-    Date.range Day 1 start <| Date.add Day 42 start
+    Date.range Day 1 start (Date.add Days 42 start)
 
 
 dateWithYear : Date -> Int -> Date
-dateWithYear date y =
+dateWithYear date year =
     let
-        m =
-            month date
-
-        d =
-            day date
+        { month, day } =
+            Date.toCalendarDate date
     in
-    if m == Feb && d == 29 && not (isLeapYear y) then
-        Date.fromCalendarDate y Feb 28
-    else
-        Date.fromCalendarDate y m d
+    Date.fromCalendarDate year month day
 
 
 dateWithMonth : Date -> Month -> Date
-dateWithMonth date m =
+dateWithMonth date month =
     let
-        y =
-            year date
-
-        d =
-            day date
+        { year, day } =
+            Date.toCalendarDate date
     in
-    Date.fromCalendarDate y m <| Basics.min d (daysInMonth y m)
+    Date.fromCalendarDate year month day
 
 
 
@@ -114,7 +103,7 @@ view minimum maximum maybeSelected =
     div
         [ classList
             [ ( "date-selector", True )
-            , ( "date-selector--scrollable-year", year maximum - year minimum >= 12 )
+            , ( "date-selector--scrollable-year", Date.year maximum - Date.year minimum >= 12 )
             ]
         ]
         [ div []
@@ -133,32 +122,32 @@ view minimum maximum maybeSelected =
                     viewDateTableDisabled minimum
             ]
         ]
-        |> Html.map (Date.clamp minimum maximum)
+        |> Html.map (clamp minimum maximum)
 
 
 viewYearList : Date -> Date -> Maybe Date -> Html Date
 viewYearList minimum maximum maybeSelected =
     let
         isInvertedMinMax =
-            Date.compare minimum maximum == GT
+            minimum > maximum
 
         years =
             if isInvertedMinMax then
-                [ maybeSelected |> Maybe.withDefault minimum |> year ]
+                [ maybeSelected |> Maybe.withDefault minimum |> Date.year ]
             else
-                List.range (year minimum) (year maximum)
+                List.range (Date.year minimum) (Date.year maximum)
 
         isSelectedYear : Int -> Bool
         isSelectedYear =
             maybeSelected
-                |> Maybe.map (\selected -> (==) (year selected))
+                |> Maybe.map (\selected -> (==) (Date.year selected))
                 |> Maybe.withDefault (\_ -> False)
     in
     ol
         [ on "click" <|
             Json.Decode.map
-                (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromCalendarDate (year minimum) Jan 1)))
-                (Json.Decode.at [ "target", "year" ] Json.Decode.int)
+                (dateWithYear (maybeSelected |> Maybe.withDefault (Date.firstOfYear (Date.year minimum))))
+                (Json.Decode.at [ "target", "data-year" ] Json.Decode.int)
         ]
         (years
             |> List.map
@@ -174,7 +163,7 @@ viewYearList minimum maximum maybeSelected =
                     in
                     li
                         [ class <| classNameFromState state
-                        , property "year" <|
+                        , property "data-year" <|
                             if isSelectable state then
                                 Json.Encode.int y
                             else
@@ -194,16 +183,16 @@ viewMonthList : Date -> Date -> Date -> Html Date
 viewMonthList minimum maximum selected =
     let
         isInvertedMinMax =
-            Date.compare minimum maximum == GT
+            minimum > maximum
 
         first =
-            if year selected == year minimum then
+            if Date.year selected == Date.year minimum then
                 Date.monthNumber minimum
             else
                 1
 
         last =
-            if year selected == year maximum then
+            if Date.year selected == Date.year maximum then
                 Date.monthNumber maximum
             else
                 12
@@ -211,8 +200,8 @@ viewMonthList minimum maximum selected =
     ol
         [ on "click" <|
             Json.Decode.map
-                (dateWithMonth selected << monthFromMonthNumber)
-                (Json.Decode.at [ "target", "monthNumber" ] Json.Decode.int)
+                (Date.numberToMonth >> dateWithMonth selected)
+                (Json.Decode.at [ "target", "data-month" ] Json.Decode.int)
         ]
         (monthNames
             |> List.indexedMap
@@ -231,7 +220,7 @@ viewMonthList minimum maximum selected =
                     in
                     li
                         [ class <| classNameFromState state
-                        , property "monthNumber" <|
+                        , property "data-month" <|
                             if isSelectable state then
                                 Json.Encode.int n
                             else
@@ -255,16 +244,16 @@ viewMonthListDisabled =
         )
 
 
-dayOfWeekNames : List String
-dayOfWeekNames =
+weekdayNames : List String
+weekdayNames =
     [ "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" ]
 
 
-viewDayOfWeekHeader : Html a
-viewDayOfWeekHeader =
+viewWeekdayHeader : Html a
+viewWeekdayHeader =
     thead []
         [ tr []
-            (dayOfWeekNames
+            (weekdayNames
                 |> List.map
                     (\name ->
                         th [] [ text name ]
@@ -277,18 +266,18 @@ viewDateTable : Date -> Date -> Date -> Html Date
 viewDateTable minimum maximum selected =
     let
         isInvertedMinMax =
-            Date.compare minimum maximum == GT
+            minimum > maximum
 
         weeks =
-            monthDates (year selected) (month selected) |> groupsOf 7
+            monthDates (Date.year selected) (Date.month selected) |> groupsOf 7
     in
     table []
-        [ viewDayOfWeekHeader
+        [ viewWeekdayHeader
         , tbody
             [ on "click" <|
                 Json.Decode.map
-                    Date.fromTime
-                    (Json.Decode.at [ "target", "time" ] Json.Decode.float)
+                    identity
+                    (Json.Decode.at [ "target", "data-date" ] Json.Decode.int)
             ]
             (weeks
                 |> List.map
@@ -299,24 +288,24 @@ viewDateTable minimum maximum selected =
                                     (\date ->
                                         let
                                             state =
-                                                if Date.equalBy Day date selected then
+                                                if date == selected then
                                                     Selected
-                                                else if not (Date.isBetween minimum maximum date) || isInvertedMinMax then
+                                                else if not (date |> isBetween minimum maximum) || isInvertedMinMax then
                                                     Disabled
-                                                else if month date /= month selected then
+                                                else if Date.monthNumber date /= Date.monthNumber selected then
                                                     Dimmed
                                                 else
                                                     Normal
                                         in
                                         td
                                             [ class <| classNameFromState state
-                                            , property "time" <|
+                                            , property "data-date" <|
                                                 if isSelectable state then
-                                                    Json.Encode.float (Date.toTime date)
+                                                    Json.Encode.int date
                                                 else
                                                     Json.Encode.null
                                             ]
-                                            [ text (day date |> toString) ]
+                                            [ text (Date.day date |> toString) ]
                                     )
                             )
                     )
@@ -328,26 +317,24 @@ viewDateTableDisabled : Date -> Html a
 viewDateTableDisabled date =
     let
         weeks =
-            monthDates (year date) (month date) |> groupsOf 7
+            monthDates (Date.year date) (Date.month date) |> groupsOf 7
 
         disabled =
             classNameFromState Disabled
     in
     table []
-        [ viewDayOfWeekHeader
-        , tbody []
-            (weeks
-                |> List.map
-                    (\week ->
-                        tr []
-                            (week
-                                |> List.map
-                                    (\date ->
-                                        td
-                                            [ class disabled ]
-                                            [ text (day date |> toString) ]
-                                    )
+        [ viewWeekdayHeader
+        , tbody [] <|
+            List.map
+                (\weekdates ->
+                    tr [] <|
+                        List.map
+                            (\date ->
+                                td
+                                    [ class disabled ]
+                                    [ text (Date.day date |> toString) ]
                             )
-                    )
-            )
+                            weekdates
+                )
+                weeks
         ]

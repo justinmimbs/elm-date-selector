@@ -1,7 +1,6 @@
 module Main exposing (..)
 
-import Date exposing (Date, Month(..))
-import Date.Extra as Date
+import Date.RataDie as Date exposing (Date, Month(..))
 import DateSelector
 import Html exposing (Html, div, h1, text)
 import String
@@ -14,7 +13,7 @@ main =
             Model
                 (Date.fromCalendarDate 2011 Mar 15)
                 (Date.fromCalendarDate 2017 Sep 15)
-                (Date.fromParts 2016 Sep 15 9 0 0 0)
+                (Date.fromCalendarDate 2016 Sep 15)
         , view = view
         , update = update
         }

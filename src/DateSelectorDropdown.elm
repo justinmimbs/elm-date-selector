@@ -15,8 +15,7 @@ clicked.
 
 -}
 
-import Date exposing (Date)
-import Date.Extra as Date
+import Date.RataDie as Date exposing (Date)
 import DateSelector
 import Dropdown
 import Html exposing (Html, input)
