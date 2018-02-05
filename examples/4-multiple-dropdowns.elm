@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Date.RataDie as Date exposing (Date, Interval(Month), Month(..), Unit(Days, Years))
+import Date.Basic as Date exposing (Date, Interval(Month), Month(..), Unit(Days, Years))
 import DateSelectorDropdown
 import Html exposing (Html, div, h1, label, text)
 import Html.Attributes exposing (class)
