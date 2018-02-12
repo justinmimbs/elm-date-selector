@@ -7,8 +7,7 @@ module DateSelector exposing (view)
 -}
 
 import Date exposing (Date, Month(..), day, month, year)
-import Date.Extra as Date exposing (Interval(..))
-import Date.Extra.Facts exposing (daysInMonth, isLeapYear, monthFromMonthNumber)
+import Date.Extra as Date exposing (Interval(..), numberToMonth)
 import Html exposing (Html, div, li, ol, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, classList, property)
 import Html.Events exposing (on)
@@ -26,7 +25,7 @@ groupsOf n list =
 
 isBetween : comparable -> comparable -> comparable -> Bool
 isBetween a b x =
-    a <= x && x <= b || b <= x && x <= a
+    a <= x && x <= b
 
 
 monthDates : Int -> Month -> List Date
@@ -40,29 +39,12 @@ monthDates y m =
 
 dateWithYear : Date -> Int -> Date
 dateWithYear date y =
-    let
-        m =
-            month date
-
-        d =
-            day date
-    in
-    if m == Feb && d == 29 && not (isLeapYear y) then
-        Date.fromCalendarDate y Feb 28
-    else
-        Date.fromCalendarDate y m d
+    Date.fromCalendarDate y (month date) (day date)
 
 
 dateWithMonth : Date -> Month -> Date
 dateWithMonth date m =
-    let
-        y =
-            year date
-
-        d =
-            day date
-    in
-    Date.fromCalendarDate y m <| Basics.min d (daysInMonth y m)
+    Date.fromCalendarDate (year date) m (day date)
 
 
 
@@ -158,7 +140,7 @@ viewYearList minimum maximum maybeSelected =
         [ on "click" <|
             Json.Decode.map
                 (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromCalendarDate (year minimum) Jan 1)))
-                (Json.Decode.at [ "target", "year" ] Json.Decode.int)
+                (Json.Decode.at [ "target", "data-year" ] Json.Decode.int)
         ]
         (years
             |> List.map
@@ -174,7 +156,7 @@ viewYearList minimum maximum maybeSelected =
                     in
                     li
                         [ class <| classNameFromState state
-                        , property "year" <|
+                        , property "data-year" <|
                             if isSelectable state then
                                 Json.Encode.int y
                             else
@@ -211,8 +193,8 @@ viewMonthList minimum maximum selected =
     ol
         [ on "click" <|
             Json.Decode.map
-                (dateWithMonth selected << monthFromMonthNumber)
-                (Json.Decode.at [ "target", "monthNumber" ] Json.Decode.int)
+                (numberToMonth >> dateWithMonth selected)
+                (Json.Decode.at [ "target", "data-month" ] Json.Decode.int)
         ]
         (monthNames
             |> List.indexedMap
@@ -231,7 +213,7 @@ viewMonthList minimum maximum selected =
                     in
                     li
                         [ class <| classNameFromState state
-                        , property "monthNumber" <|
+                        , property "data-month" <|
                             if isSelectable state then
                                 Json.Encode.int n
                             else
@@ -288,7 +270,7 @@ viewDateTable minimum maximum selected =
             [ on "click" <|
                 Json.Decode.map
                     Date.fromTime
-                    (Json.Decode.at [ "target", "time" ] Json.Decode.float)
+                    (Json.Decode.at [ "target", "data-time" ] Json.Decode.float)
             ]
             (weeks
                 |> List.map
@@ -310,7 +292,7 @@ viewDateTable minimum maximum selected =
                                         in
                                         td
                                             [ class <| classNameFromState state
-                                            , property "time" <|
+                                            , property "data-time" <|
                                                 if isSelectable state then
                                                     Json.Encode.float (Date.toTime date)
                                                 else
