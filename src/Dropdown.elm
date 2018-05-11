@@ -3,6 +3,7 @@ module Dropdown exposing (view)
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import Html.Keyed
 
 
 view : msg -> Html msg -> Maybe (Html msg) -> Html msg
@@ -15,20 +16,30 @@ view close button maybeContent =
     in
     case maybeContent of
         Nothing ->
-            div
+            Html.Keyed.node "div"
                 [ class "dropdown" ]
-                [ buttonContainer ]
+                [ ( "button"
+                  , buttonContainer
+                  )
+                ]
 
         Just content ->
-            div
+            Html.Keyed.node "div"
                 [ class "dropdown-open" ]
-                [ div
-                    [ class "dropdown--page-cover"
-                    , onClick close
-                    ]
-                    []
-                , buttonContainer
-                , div
-                    [ class "dropdown--content-container" ]
-                    [ content ]
+                [ ( "cover"
+                  , div
+                        [ class "dropdown--page-cover"
+                        , onClick close
+                        , Html.Attributes.style "background" "rgba(0, 0, 0, 0.1)"
+                        ]
+                        []
+                  )
+                , ( "button"
+                  , buttonContainer
+                  )
+                , ( "content"
+                  , div
+                        [ class "dropdown--content-container" ]
+                        [ content ]
+                  )
                 ]

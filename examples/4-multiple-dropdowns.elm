@@ -1,16 +1,17 @@
 module Main exposing (..)
 
-import Date.Basic as Date exposing (Date, Interval(Month), Month(..), Unit(Days, Years))
+import Browser
+import Date.Basic as Date exposing (Date, Interval(..), Month(..), Unit(..))
 import DateSelectorDropdown
 import Html exposing (Html, div, h1, label, text)
 import Html.Attributes exposing (class)
 import String
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.beginnerProgram
-        { model = init <| Date.fromCalendarDate 2016 Sep 15
+    Browser.sandbox
+        { init = init <| Date.fromCalendarDate 2016 Sep 15
         , view = view
         , update = update
         }

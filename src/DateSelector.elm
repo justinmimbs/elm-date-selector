@@ -7,7 +7,7 @@ module DateSelector exposing (view)
 -}
 
 import Date.Basic as Date exposing (Date)
-import Date.RataDie as RataDie exposing (Interval(Day, Monday), Month(..), RataDie, Unit(Days))
+import Date.RataDie as RataDie exposing (Interval(..), Month(..), RataDie, Unit(..))
 import Html exposing (Html, div, li, ol, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, classList, property)
 import Html.Events exposing (on)
@@ -20,7 +20,7 @@ groupsOf n list =
     if List.isEmpty list then
         []
     else
-        List.take n list :: groupsOf n (List.drop n list)
+        List.keep n list :: groupsOf n (List.drop n list)
 
 
 isBetween : comparable -> comparable -> comparable -> Bool
@@ -180,7 +180,7 @@ viewYearList minimum maximum maybeSelected =
                             else
                                 Json.Encode.null
                         ]
-                        [ text (toString y) ]
+                        [ text (String.fromInt y) ]
                 )
         )
 
@@ -316,7 +316,7 @@ viewDateTable minimum maximum selected =
                                                 else
                                                     Json.Encode.null
                                             ]
-                                            [ text (RataDie.day date |> toString) ]
+                                            [ text (RataDie.day date |> String.fromInt) ]
                                     )
                             )
                     )
@@ -325,10 +325,10 @@ viewDateTable minimum maximum selected =
 
 
 viewDateTableDisabled : RataDie -> Html a
-viewDateTableDisabled date =
+viewDateTableDisabled selected =
     let
         weeks =
-            monthDates (RataDie.year date) (RataDie.month date) |> groupsOf 7
+            monthDates (RataDie.year selected) (RataDie.month selected) |> groupsOf 7
 
         disabled =
             classNameFromState Disabled
@@ -343,7 +343,7 @@ viewDateTableDisabled date =
                             (\date ->
                                 td
                                     [ class disabled ]
-                                    [ text (RataDie.day date |> toString) ]
+                                    [ text (RataDie.day date |> String.fromInt) ]
                             )
                             weekdates
                 )

@@ -33,12 +33,12 @@ The final three arguments are used to create the `DateSelector` view if
 necessary.
 
     DateSelectorDropdown.view
-      toggleDropdownMsg
-      toSelectDateMsg
-      isOpen
-      minimum
-      maximum
-      selected
+        toggleDropdownMsg
+        toSelectDateMsg
+        isOpen
+        minimum
+        maximum
+        selected
 
 -}
 view : msg -> (Date -> msg) -> Bool -> Date -> Date -> Maybe Date -> Html msg
@@ -52,13 +52,13 @@ custom button will receive _isOpen_ and _selected_, and the `Html` it creates
 is responsible for producing any `msg` needed to open the dropdown.
 
     DateSelectorDropdown.viewWithButton
-      viewButton
-      closeDropdownMsg
-      toSelectDateMsg
-      isOpen
-      minimum
-      maximum
-      selected
+        viewButton
+        closeDropdownMsg
+        toSelectDateMsg
+        isOpen
+        minimum
+        maximum
+        selected
 
 A full example is available [here](https://github.com/justinmimbs/elm-date-selector/blob/master/examples/3-custom-button.elm).
 

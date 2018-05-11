@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Browser
 import Date.Basic as Date exposing (Date, Month(..))
 import DateSelectorDropdown
 import Html exposing (Html, div, h1, span, text)
@@ -8,10 +9,10 @@ import Html.Events exposing (onClick)
 import String
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.beginnerProgram
-        { model =
+    Browser.sandbox
+        { init =
             Model
                 (Date.fromCalendarDate 2011 Mar 15)
                 (Date.fromCalendarDate 2017 Sep 15)
