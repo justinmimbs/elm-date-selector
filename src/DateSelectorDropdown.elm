@@ -15,7 +15,7 @@ clicked.
 
 -}
 
-import Date.Basic as Date exposing (Date)
+import Date exposing (Date)
 import DateSelector
 import Dropdown
 import Html exposing (Html, input)

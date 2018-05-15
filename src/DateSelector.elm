@@ -6,7 +6,7 @@ module DateSelector exposing (view)
 
 -}
 
-import Date.Basic as Date exposing (Date)
+import Date exposing (Date)
 import Date.RataDie as RataDie exposing (Interval(..), Month(..), RataDie, Unit(..))
 import Html exposing (Html, div, li, ol, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, classList, property)
@@ -20,7 +20,7 @@ groupsOf n list =
     if List.isEmpty list then
         []
     else
-        List.keep n list :: groupsOf n (List.drop n list)
+        List.take n list :: groupsOf n (List.drop n list)
 
 
 isBetween : comparable -> comparable -> comparable -> Bool
@@ -32,7 +32,7 @@ monthDates : Int -> Month -> List RataDie
 monthDates y m =
     let
         start =
-            RataDie.firstOfMonth y m |> RataDie.floor Monday
+            RataDie.fromCalendarDate y m 1 |> RataDie.floor Monday
     in
     RataDie.range Day 1 start (RataDie.add Days 42 start)
 
@@ -157,7 +157,7 @@ viewYearList minimum maximum maybeSelected =
     ol
         [ on "click" <|
             Json.Decode.map
-                (dateWithYear (maybeSelected |> Maybe.withDefault (RataDie.firstOfYear (RataDie.year minimum))))
+                (dateWithYear (maybeSelected |> Maybe.withDefault (RataDie.fromOrdinalDate (RataDie.year minimum) 1)))
                 (Json.Decode.at [ "target", "data-year" ] Json.Decode.int)
         ]
         (years

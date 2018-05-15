@@ -30,7 +30,6 @@ view close button maybeContent =
                   , div
                         [ class "dropdown--page-cover"
                         , onClick close
-                        , Html.Attributes.style "background" "rgba(0, 0, 0, 0.1)"
                         ]
                         []
                   )

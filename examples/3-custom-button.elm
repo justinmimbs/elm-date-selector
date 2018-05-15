@@ -1,7 +1,7 @@
-module Main exposing (..)
+module Example3 exposing (..)
 
 import Browser
-import Date.Basic as Date exposing (Date, Month(..))
+import Date exposing (Date, Month(..))
 import DateSelectorDropdown
 import Html exposing (Html, div, h1, span, text)
 import Html.Attributes exposing (class, classList)
