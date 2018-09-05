@@ -7,18 +7,20 @@ module DateSelector exposing (view)
 -}
 
 import Date exposing (Date)
-import Date.RataDie as RataDie exposing (Interval(..), Month(..), RataDie, Unit(..))
+import Date.RataDie as RataDie exposing (Interval(..), RataDie, Unit(..))
 import Html exposing (Html, div, li, ol, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, classList, property)
 import Html.Events exposing (on)
 import Json.Decode
 import Json.Encode
+import Time exposing (Month(..))
 
 
 groupsOf : Int -> List a -> List (List a)
 groupsOf n list =
     if List.isEmpty list then
         []
+
     else
         List.take n list :: groupsOf n (List.drop n list)
 
@@ -39,20 +41,18 @@ monthDates y m =
 
 dateWithYear : RataDie -> Int -> RataDie
 dateWithYear date year =
-    let
-        { month, day } =
-            RataDie.toCalendarDate date
-    in
-    RataDie.fromCalendarDate year month day
+    RataDie.fromCalendarDate
+        year
+        (RataDie.month date)
+        (RataDie.day date)
 
 
 dateWithMonth : RataDie -> Month -> RataDie
 dateWithMonth date month =
-    let
-        { year, day } =
-            RataDie.toCalendarDate date
-    in
-    RataDie.fromCalendarDate year month day
+    RataDie.fromCalendarDate
+        (RataDie.year date)
+        month
+        (RataDie.day date)
 
 
 
@@ -91,9 +91,9 @@ classNameFromState state =
 dates, and a selected date if there is one.
 
     DateSelector.view
-      minimum
-      maximum
-      selected
+        minimum
+        maximum
+        selected
 
 The resulting `Html` produces `Date` messages when the user selects a date. The
 `Date` values produced will always be within the bounds provided.
@@ -145,6 +145,7 @@ viewYearList minimum maximum maybeSelected =
         years =
             if isInvertedMinMax then
                 [ maybeSelected |> Maybe.withDefault minimum |> RataDie.year ]
+
             else
                 List.range (RataDie.year minimum) (RataDie.year maximum)
 
@@ -167,8 +168,10 @@ viewYearList minimum maximum maybeSelected =
                         state =
                             if isSelectedYear y then
                                 Selected
+
                             else if isInvertedMinMax then
                                 Disabled
+
                             else
                                 Normal
                     in
@@ -177,6 +180,7 @@ viewYearList minimum maximum maybeSelected =
                         , property "data-year" <|
                             if isSelectable state then
                                 Json.Encode.int y
+
                             else
                                 Json.Encode.null
                         ]
@@ -199,12 +203,14 @@ viewMonthList minimum maximum selected =
         first =
             if RataDie.year selected == RataDie.year minimum then
                 RataDie.monthNumber minimum
+
             else
                 1
 
         last =
             if RataDie.year selected == RataDie.year maximum then
                 RataDie.monthNumber maximum
+
             else
                 12
     in
@@ -224,8 +230,10 @@ viewMonthList minimum maximum selected =
                         state =
                             if n == RataDie.monthNumber selected then
                                 Selected
+
                             else if not (isBetween first last n) || isInvertedMinMax then
                                 Disabled
+
                             else
                                 Normal
                     in
@@ -234,6 +242,7 @@ viewMonthList minimum maximum selected =
                         , property "data-month" <|
                             if isSelectable state then
                                 Json.Encode.int n
+
                             else
                                 Json.Encode.null
                         ]
@@ -301,10 +310,13 @@ viewDateTable minimum maximum selected =
                                             state =
                                                 if date == selected then
                                                     Selected
+
                                                 else if not (date |> isBetween minimum maximum) || isInvertedMinMax then
                                                     Disabled
+
                                                 else if RataDie.monthNumber date /= RataDie.monthNumber selected then
                                                     Dimmed
+
                                                 else
                                                     Normal
                                         in
@@ -313,6 +325,7 @@ viewDateTable minimum maximum selected =
                                             , property "data-date" <|
                                                 if isSelectable state then
                                                     Json.Encode.int date
+
                                                 else
                                                     Json.Encode.null
                                             ]

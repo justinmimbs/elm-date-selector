@@ -1,10 +1,10 @@
-module Example1 exposing (..)
+module Example1 exposing (main)
 
 import Browser
-import Date exposing (Date, Month(..))
+import Date exposing (Date)
 import DateSelector
 import Html exposing (Html, div, h1, text)
-import String
+import Time exposing (Month(..))
 
 
 main : Program () Model Date
@@ -55,6 +55,6 @@ view { minimum, maximum, selected } =
                     , "@import url(./date-selector.css);"
                     ]
             ]
-        , h1 [] [ text <| Date.toFormattedString "EEE MMM d, yyyy" selected ]
+        , h1 [] [ text <| Date.format "EEE MMM d, yyyy" selected ]
         , DateSelector.view minimum maximum (Just selected)
         ]

@@ -1,11 +1,11 @@
-module Example4 exposing (..)
+module Example4 exposing (main)
 
 import Browser
-import Date exposing (Date, Interval(..), Month(..), Unit(..))
+import Date exposing (Date, Interval(..), Unit(..))
 import DateSelectorDropdown
 import Html exposing (Html, div, h1, label, text)
 import Html.Attributes exposing (class)
-import String
+import Time exposing (Month(..))
 
 
 main : Program () Model Msg
@@ -129,6 +129,7 @@ viewDateSelector dateField openDateField =
     DateSelectorDropdown.view
         (if isOpen then
             CloseDropdown
+
          else
             OpenDropdown dateField
         )

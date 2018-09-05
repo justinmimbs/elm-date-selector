@@ -1,4 +1,7 @@
-module DateSelectorDropdown exposing (view, viewWithButton)
+module DateSelectorDropdown exposing
+    ( view
+    , viewWithButton
+    )
 
 {-| Create a button that displays a `DateSelector` view below itself when
 clicked.
@@ -69,6 +72,7 @@ viewWithButton viewButton close toSelect isOpen minimum maximum selected =
         dateSelectorView =
             if isOpen then
                 Just (DateSelector.view minimum maximum selected |> Html.map toSelect)
+
             else
                 Nothing
     in
@@ -81,7 +85,7 @@ viewWithButton viewButton close toSelect isOpen minimum maximum selected =
 defaultViewButton : msg -> Bool -> Maybe Date -> Html msg
 defaultViewButton toggle isOpen maybeDate =
     input
-        [ value (maybeDate |> Maybe.map (Date.toFormattedString "yyyy-MM-dd") |> Maybe.withDefault "")
+        [ value (maybeDate |> Maybe.map (Date.format "yyyy-MM-dd") |> Maybe.withDefault "")
         , readonly True
         , onClick toggle
         ]

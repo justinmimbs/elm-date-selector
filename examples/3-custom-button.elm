@@ -1,12 +1,12 @@
-module Example3 exposing (..)
+module Example3 exposing (main)
 
 import Browser
-import Date exposing (Date, Month(..))
+import Date exposing (Date)
 import DateSelectorDropdown
 import Html exposing (Html, div, h1, span, text)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
-import String
+import Time exposing (Month(..))
 
 
 main : Program () Model Msg
@@ -69,7 +69,7 @@ view { minimum, maximum, selected, isOpen } =
                     , "@import url(./date-selector.css);"
                     ]
             ]
-        , h1 [] [ text (selected |> Maybe.map (Date.toFormattedString "'Just' (EEE MMM d, yyyy)") |> Maybe.withDefault "Nothing") ]
+        , h1 [] [ text (selected |> Maybe.map (Date.format "'Just' (EEE MMM d, yyyy)") |> Maybe.withDefault "Nothing") ]
         , DateSelectorDropdown.viewWithButton
             viewCustomButton
             Toggle
@@ -91,7 +91,7 @@ viewCustomButton isOpen selected =
         ]
         [ div
             [ class "date-selector-dropdown-button--date" ]
-            [ text (selected |> Maybe.map (Date.toFormattedString "yyyy MMM d") |> Maybe.withDefault "") ]
+            [ text (selected |> Maybe.map (Date.format "yyyy MMM d") |> Maybe.withDefault "") ]
         , case selected of
             Just _ ->
                 div
@@ -112,6 +112,7 @@ viewCustomButton isOpen selected =
                 [ text <|
                     if isOpen then
                         "▲"
+
                     else
                         "▼"
                 ]
