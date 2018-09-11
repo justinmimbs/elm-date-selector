@@ -3,7 +3,7 @@ module Example2 exposing (main)
 import Browser
 import Date exposing (Date)
 import DateSelectorDropdown
-import Html exposing (Html, div, h1, text)
+import Html exposing (Html)
 import Time exposing (Month(..))
 
 
@@ -58,16 +58,16 @@ update msg model =
 
 view : Model -> Html Msg
 view { minimum, maximum, selected, isOpen } =
-    div []
+    Html.div []
         [ Html.node "style"
             []
-            [ text <|
+            [ Html.text <|
                 String.join " "
                     [ "@import url(./examples.css);"
                     , "@import url(./date-selector.css);"
                     ]
             ]
-        , h1 [] [ text <| Date.format "EEE MMM d, yyyy" selected ]
+        , Html.h1 [] [ Html.text <| Date.format "EEE MMM d, yyyy" selected ]
         , DateSelectorDropdown.view
             Toggle
             Select

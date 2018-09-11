@@ -1,8 +1,8 @@
 module Dropdown exposing (view)
 
-import Html exposing (Html, div)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
+import Html exposing (Html)
+import Html.Attributes
+import Html.Events
 import Html.Keyed
 
 
@@ -10,14 +10,14 @@ view : msg -> Html msg -> Maybe (Html msg) -> Html msg
 view close button maybeContent =
     let
         buttonContainer =
-            div
-                [ class "dropdown--button-container" ]
+            Html.div
+                [ Html.Attributes.class "dropdown--button-container" ]
                 [ button ]
     in
     case maybeContent of
         Nothing ->
             Html.Keyed.node "div"
-                [ class "dropdown" ]
+                [ Html.Attributes.class "dropdown" ]
                 [ ( "button"
                   , buttonContainer
                   )
@@ -25,11 +25,11 @@ view close button maybeContent =
 
         Just content ->
             Html.Keyed.node "div"
-                [ class "dropdown-open" ]
+                [ Html.Attributes.class "dropdown-open" ]
                 [ ( "cover"
-                  , div
-                        [ class "dropdown--page-cover"
-                        , onClick close
+                  , Html.div
+                        [ Html.Attributes.class "dropdown--page-cover"
+                        , Html.Events.onClick close
                         ]
                         []
                   )
@@ -37,8 +37,8 @@ view close button maybeContent =
                   , buttonContainer
                   )
                 , ( "content"
-                  , div
-                        [ class "dropdown--content-container" ]
+                  , Html.div
+                        [ Html.Attributes.class "dropdown--content-container" ]
                         [ content ]
                   )
                 ]

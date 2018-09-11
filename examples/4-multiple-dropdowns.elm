@@ -3,8 +3,8 @@ module Example4 exposing (main)
 import Browser
 import Date exposing (Date, Interval(..), Unit(..))
 import DateSelectorDropdown
-import Html exposing (Html, div, h1, label, text)
-import Html.Attributes exposing (class)
+import Html exposing (Html)
+import Html.Attributes
 import Time exposing (Month(..))
 
 
@@ -83,27 +83,27 @@ update msg model =
 
 view : Model -> Html Msg
 view { today, from, to, birthdate, openDateField } =
-    div []
+    Html.div []
         [ Html.node "style"
             []
-            [ text <|
+            [ Html.text <|
                 String.join " "
                     [ "@import url(./examples.css);"
                     , "@import url(./date-selector.css);"
                     ]
             ]
-        , div
-            [ class "columns" ]
-            [ div []
-                [ label [] [ text "From" ]
+        , Html.div
+            [ Html.Attributes.class "columns" ]
+            [ Html.div []
+                [ Html.label [] [ Html.text "From" ]
                 , viewDateSelector From
                     openDateField
                     (Date.add Years -10 today)
                     to
                     (Just from)
                 ]
-            , div []
-                [ label [] [ text "To" ]
+            , Html.div []
+                [ Html.label [] [ Html.text "To" ]
                 , viewDateSelector To
                     openDateField
                     from
@@ -111,7 +111,7 @@ view { today, from, to, birthdate, openDateField } =
                     (Just to)
                 ]
             ]
-        , label [] [ text "Birthdate" ]
+        , Html.label [] [ Html.text "Birthdate" ]
         , viewDateSelector Birthdate
             openDateField
             (Date.add Years -110 today)

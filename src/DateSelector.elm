@@ -7,9 +7,9 @@ module DateSelector exposing (view)
 -}
 
 import Date exposing (Date, Interval(..), Month, Unit(..))
-import Html exposing (Html, div, li, ol, table, tbody, td, text, th, thead, tr)
-import Html.Attributes exposing (class, classList, property)
-import Html.Events exposing (on)
+import Html exposing (Html)
+import Html.Attributes
+import Html.Events
 import Json.Decode
 import Json.Encode
 
@@ -121,20 +121,20 @@ The resulting `Html` produces `Date` messages when the user selects a date. The
 -}
 view : Date -> Date -> Maybe Date -> Html Date
 view minDate maxDate maybeSelected =
-    div
-        [ classList
+    Html.div
+        [ Html.Attributes.classList
             [ ( "date-selector", True )
             , ( "date-selector--scrollable-year", Date.year maxDate - Date.year minDate >= 12 )
             ]
         ]
-        [ div []
+        [ Html.div []
             [ viewYearList minDate maxDate maybeSelected ]
-        , div []
+        , Html.div []
             [ maybeSelected
                 |> Maybe.map (viewMonthList minDate maxDate)
                 |> Maybe.withDefault viewMonthListDisabled
             ]
-        , div []
+        , Html.div []
             [ case maybeSelected of
                 Just selected ->
                     viewDateTable minDate maxDate selected
@@ -165,8 +165,8 @@ viewYearList minDate maxDate maybeSelected =
                 |> Maybe.map (\selected -> (==) (Date.year selected))
                 |> Maybe.withDefault (always False)
     in
-    ol
-        [ on "click" <|
+    Html.ol
+        [ Html.Events.on "click" <|
             Json.Decode.map
                 (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromOrdinalDate (Date.year minDate) 1)))
                 (Json.Decode.at [ "target", "data-year" ] Json.Decode.int)
@@ -185,16 +185,16 @@ viewYearList minDate maxDate maybeSelected =
                             else
                                 Normal
                     in
-                    li
-                        [ class <| classNameFromState state
-                        , property "data-year" <|
+                    Html.li
+                        [ Html.Attributes.class <| classNameFromState state
+                        , Html.Attributes.property "data-year" <|
                             if isSelectable state then
                                 Json.Encode.int year
 
                             else
                                 Json.Encode.null
                         ]
-                        [ text (String.fromInt year) ]
+                        [ Html.text (String.fromInt year) ]
                 )
         )
 
@@ -224,8 +224,8 @@ viewMonthList minDate maxDate selected =
             else
                 12
     in
-    ol
-        [ on "click" <|
+    Html.ol
+        [ Html.Events.on "click" <|
             Json.Decode.map
                 (Date.numberToMonth >> dateWithMonth selected)
                 (Json.Decode.at [ "target", "data-month" ] Json.Decode.int)
@@ -247,29 +247,29 @@ viewMonthList minDate maxDate selected =
                             else
                                 Normal
                     in
-                    li
-                        [ class <| classNameFromState state
-                        , property "data-month" <|
+                    Html.li
+                        [ Html.Attributes.class <| classNameFromState state
+                        , Html.Attributes.property "data-month" <|
                             if isSelectable state then
                                 Json.Encode.int monthNumber
 
                             else
                                 Json.Encode.null
                         ]
-                        [ text monthName ]
+                        [ Html.text monthName ]
                 )
         )
 
 
 viewMonthListDisabled : Html a
 viewMonthListDisabled =
-    ol []
+    Html.ol []
         (monthNames
             |> List.map
                 (\monthName ->
-                    li
-                        [ class <| classNameFromState Disabled ]
-                        [ text monthName ]
+                    Html.li
+                        [ Html.Attributes.class <| classNameFromState Disabled ]
+                        [ Html.text monthName ]
                 )
         )
 
@@ -281,12 +281,12 @@ weekdayNames =
 
 weekdayHeader : Html a
 weekdayHeader =
-    thead []
-        [ tr []
+    Html.thead []
+        [ Html.tr []
             (weekdayNames
                 |> List.map
                     (\weekdayName ->
-                        th [] [ text weekdayName ]
+                        Html.th [] [ Html.text weekdayName ]
                     )
             )
         ]
@@ -301,10 +301,10 @@ viewDateTable minDate maxDate selected =
         weeks =
             monthDates (Date.year selected) (Date.month selected) |> groupsOf 7
     in
-    table []
+    Html.table []
         [ weekdayHeader
-        , tbody
-            [ on "click" <|
+        , Html.tbody
+            [ Html.Events.on "click" <|
                 Json.Decode.map
                     Date.fromRataDie
                     (Json.Decode.at [ "target", "data-date" ] Json.Decode.int)
@@ -312,7 +312,7 @@ viewDateTable minDate maxDate selected =
             (weeks
                 |> List.map
                     (\dates ->
-                        tr []
+                        Html.tr []
                             (dates
                                 |> List.map
                                     (\date ->
@@ -330,16 +330,16 @@ viewDateTable minDate maxDate selected =
                                                 else
                                                     Normal
                                         in
-                                        td
-                                            [ class <| classNameFromState state
-                                            , property "data-date" <|
+                                        Html.td
+                                            [ Html.Attributes.class <| classNameFromState state
+                                            , Html.Attributes.property "data-date" <|
                                                 if isSelectable state then
                                                     Json.Encode.int (Date.toRataDie date)
 
                                                 else
                                                     Json.Encode.null
                                             ]
-                                            [ text <| String.fromInt (Date.day date) ]
+                                            [ Html.text <| String.fromInt (Date.day date) ]
                                     )
                             )
                     )
@@ -356,19 +356,19 @@ viewDateTableDisabled selected =
         disabled =
             classNameFromState Disabled
     in
-    table []
+    Html.table []
         [ weekdayHeader
-        , tbody []
+        , Html.tbody []
             (weeks
                 |> List.map
                     (\dates ->
-                        tr []
+                        Html.tr []
                             (dates
                                 |> List.map
                                     (\date ->
-                                        td
-                                            [ class disabled ]
-                                            [ text <| String.fromInt (Date.day date) ]
+                                        Html.td
+                                            [ Html.Attributes.class disabled ]
+                                            [ Html.text <| String.fromInt (Date.day date) ]
                                     )
                             )
                     )

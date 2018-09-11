@@ -3,9 +3,9 @@ module Example3 exposing (main)
 import Browser
 import Date exposing (Date)
 import DateSelectorDropdown
-import Html exposing (Html, div, h1, span, text)
-import Html.Attributes exposing (class, classList)
-import Html.Events exposing (onClick)
+import Html exposing (Html)
+import Html.Attributes
+import Html.Events
 import Time exposing (Month(..))
 
 
@@ -60,16 +60,16 @@ update msg model =
 
 view : Model -> Html Msg
 view { minimum, maximum, selected, isOpen } =
-    div []
+    Html.div []
         [ Html.node "style"
             []
-            [ text <|
+            [ Html.text <|
                 String.join " "
                     [ "@import url(./examples.css);"
                     , "@import url(./date-selector.css);"
                     ]
             ]
-        , h1 [] [ text (selected |> Maybe.map (Date.format "'Just' (EEE MMM d, yyyy)") |> Maybe.withDefault "Nothing") ]
+        , Html.h1 [] [ Html.text (selected |> Maybe.map (Date.format "'Just' (EEE MMM d, yyyy)") |> Maybe.withDefault "Nothing") ]
         , DateSelectorDropdown.viewWithButton
             viewCustomButton
             Toggle
@@ -83,33 +83,33 @@ view { minimum, maximum, selected, isOpen } =
 
 viewCustomButton : Bool -> Maybe Date -> Html Msg
 viewCustomButton isOpen selected =
-    div
-        [ classList
+    Html.div
+        [ Html.Attributes.classList
             [ ( "date-selector-dropdown-button", True )
             , ( "date-selector-dropdown-button--open", isOpen )
             ]
         ]
-        [ div
-            [ class "date-selector-dropdown-button--date" ]
-            [ text (selected |> Maybe.map (Date.format "yyyy MMM d") |> Maybe.withDefault "") ]
+        [ Html.div
+            [ Html.Attributes.class "date-selector-dropdown-button--date" ]
+            [ Html.text (selected |> Maybe.map (Date.format "yyyy MMM d") |> Maybe.withDefault "") ]
         , case selected of
             Just _ ->
-                div
-                    [ class "date-selector-dropdown-button--clear"
-                    , onClick (Select Nothing)
+                Html.div
+                    [ Html.Attributes.class "date-selector-dropdown-button--clear"
+                    , Html.Events.onClick (Select Nothing)
                     ]
-                    [ text "✕" ]
+                    [ Html.text "✕" ]
 
             Nothing ->
-                div
-                    [ class "date-selector-dropdown-button--clear" ]
+                Html.div
+                    [ Html.Attributes.class "date-selector-dropdown-button--clear" ]
                     []
-        , div
-            [ class "date-selector-dropdown-button--toggle"
-            , onClick Toggle
+        , Html.div
+            [ Html.Attributes.class "date-selector-dropdown-button--toggle"
+            , Html.Events.onClick Toggle
             ]
-            [ span []
-                [ text <|
+            [ Html.span []
+                [ Html.text <|
                     if isOpen then
                         "▲"
 

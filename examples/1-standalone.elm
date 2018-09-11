@@ -3,7 +3,7 @@ module Example1 exposing (main)
 import Browser
 import Date exposing (Date)
 import DateSelector
-import Html exposing (Html, div, h1, text)
+import Html exposing (Html)
 import Time exposing (Month(..))
 
 
@@ -46,15 +46,15 @@ update date model =
 
 view : Model -> Html Date
 view { minimum, maximum, selected } =
-    div []
+    Html.div []
         [ Html.node "style"
             []
-            [ text <|
+            [ Html.text <|
                 String.join " "
                     [ "@import url(./examples.css);"
                     , "@import url(./date-selector.css);"
                     ]
             ]
-        , h1 [] [ text <| Date.format "EEE MMM d, yyyy" selected ]
+        , Html.h1 [] [ Html.text <| Date.format "EEE MMM d, yyyy" selected ]
         , DateSelector.view minimum maximum (Just selected)
         ]

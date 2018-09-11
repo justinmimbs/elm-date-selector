@@ -21,9 +21,9 @@ clicked.
 import Date exposing (Date)
 import DateSelector
 import Dropdown
-import Html exposing (Html, input)
-import Html.Attributes exposing (class, readonly, value)
-import Html.Events exposing (onClick)
+import Html exposing (Html)
+import Html.Attributes
+import Html.Events
 
 
 {-| The default button is a read-only text input that displays the selected
@@ -84,9 +84,9 @@ viewWithButton viewButton close toSelect isOpen minimum maximum selected =
 
 defaultViewButton : msg -> Bool -> Maybe Date -> Html msg
 defaultViewButton toggle isOpen maybeDate =
-    input
-        [ value (maybeDate |> Maybe.map (Date.format "yyyy-MM-dd") |> Maybe.withDefault "")
-        , readonly True
-        , onClick toggle
+    Html.input
+        [ Html.Attributes.value (maybeDate |> Maybe.map (Date.format "yyyy-MM-dd") |> Maybe.withDefault "")
+        , Html.Attributes.readonly True
+        , Html.Events.onClick toggle
         ]
         []
