@@ -6,14 +6,12 @@ module DateSelector exposing (view)
 
 -}
 
-import Date exposing (Date)
-import Date.RataDie as RataDie exposing (Interval(..), RataDie, Unit(..))
+import Date exposing (Date, Interval(..), Month, Unit(..))
 import Html exposing (Html, div, li, ol, table, tbody, td, text, th, thead, tr)
 import Html.Attributes exposing (class, classList, property)
 import Html.Events exposing (on)
 import Json.Decode
 import Json.Encode
-import Time exposing (Month(..))
 
 
 groupsOf : Int -> List a -> List (List a)
@@ -27,32 +25,54 @@ groupsOf n list =
 
 isBetween : comparable -> comparable -> comparable -> Bool
 isBetween a b x =
-    a <= x && x <= b || b <= x && x <= a
+    a <= x && x <= b
 
 
-monthDates : Int -> Month -> List RataDie
+clampDate : Date -> Date -> Date -> Date
+clampDate minDate maxDate date =
+    Date.fromRataDie <|
+        clamp
+            (Date.toRataDie minDate)
+            (Date.toRataDie maxDate)
+            (Date.toRataDie date)
+
+
+compareDate : Date -> Date -> Order
+compareDate left right =
+    compare (Date.toRataDie left) (Date.toRataDie right)
+
+
+isBetweenDate : Date -> Date -> Date -> Bool
+isBetweenDate minDate maxDate date =
+    isBetween
+        (Date.toRataDie minDate)
+        (Date.toRataDie maxDate)
+        (Date.toRataDie date)
+
+
+monthDates : Int -> Month -> List Date
 monthDates y m =
     let
         start =
-            RataDie.fromCalendarDate y m 1 |> RataDie.floor Monday
+            Date.fromCalendarDate y m 1 |> Date.floor Monday
     in
-    RataDie.range Day 1 start (RataDie.add Days 42 start)
+    Date.range Day 1 start (Date.add Days 42 start)
 
 
-dateWithYear : RataDie -> Int -> RataDie
+dateWithYear : Date -> Int -> Date
 dateWithYear date year =
-    RataDie.fromCalendarDate
+    Date.fromCalendarDate
         year
-        (RataDie.month date)
-        (RataDie.day date)
+        (Date.month date)
+        (Date.day date)
 
 
-dateWithMonth : RataDie -> Month -> RataDie
+dateWithMonth : Date -> Month -> Date
 dateWithMonth date month =
-    RataDie.fromCalendarDate
-        (RataDie.year date)
+    Date.fromCalendarDate
+        (Date.year date)
         month
-        (RataDie.day date)
+        (Date.day date)
 
 
 
@@ -100,73 +120,63 @@ The resulting `Html` produces `Date` messages when the user selects a date. The
 
 -}
 view : Date -> Date -> Maybe Date -> Html Date
-view minDate maxDate maybeSelectedDate =
-    let
-        minimum =
-            minDate |> Date.toRataDie
-
-        maximum =
-            maxDate |> Date.toRataDie
-
-        maybeSelected =
-            maybeSelectedDate |> Maybe.map Date.toRataDie
-    in
+view minDate maxDate maybeSelected =
     div
         [ classList
             [ ( "date-selector", True )
-            , ( "date-selector--scrollable-year", RataDie.year maximum - RataDie.year minimum >= 12 )
+            , ( "date-selector--scrollable-year", Date.year maxDate - Date.year minDate >= 12 )
             ]
         ]
         [ div []
-            [ viewYearList minimum maximum maybeSelected ]
+            [ viewYearList minDate maxDate maybeSelected ]
         , div []
             [ maybeSelected
-                |> Maybe.map (viewMonthList minimum maximum)
+                |> Maybe.map (viewMonthList minDate maxDate)
                 |> Maybe.withDefault viewMonthListDisabled
             ]
         , div []
             [ case maybeSelected of
                 Just selected ->
-                    viewDateTable minimum maximum selected
+                    viewDateTable minDate maxDate selected
 
                 Nothing ->
-                    viewDateTableDisabled minimum
+                    viewDateTableDisabled minDate
             ]
         ]
-        |> Html.map (clamp minimum maximum >> Date.fromRataDie)
+        |> Html.map (clampDate minDate maxDate)
 
 
-viewYearList : RataDie -> RataDie -> Maybe RataDie -> Html RataDie
-viewYearList minimum maximum maybeSelected =
+viewYearList : Date -> Date -> Maybe Date -> Html Date
+viewYearList minDate maxDate maybeSelected =
     let
         isInvertedMinMax =
-            minimum > maximum
+            compareDate minDate maxDate == GT
 
         years =
             if isInvertedMinMax then
-                [ maybeSelected |> Maybe.withDefault minimum |> RataDie.year ]
+                [ Date.year (maybeSelected |> Maybe.withDefault minDate) ]
 
             else
-                List.range (RataDie.year minimum) (RataDie.year maximum)
+                List.range (Date.year minDate) (Date.year maxDate)
 
         isSelectedYear : Int -> Bool
         isSelectedYear =
             maybeSelected
-                |> Maybe.map (\selected -> (==) (RataDie.year selected))
-                |> Maybe.withDefault (\_ -> False)
+                |> Maybe.map (\selected -> (==) (Date.year selected))
+                |> Maybe.withDefault (always False)
     in
     ol
         [ on "click" <|
             Json.Decode.map
-                (dateWithYear (maybeSelected |> Maybe.withDefault (RataDie.fromOrdinalDate (RataDie.year minimum) 1)))
+                (dateWithYear (maybeSelected |> Maybe.withDefault (Date.fromOrdinalDate (Date.year minDate) 1)))
                 (Json.Decode.at [ "target", "data-year" ] Json.Decode.int)
         ]
         (years
             |> List.map
-                (\y ->
+                (\year ->
                     let
                         state =
-                            if isSelectedYear y then
+                            if isSelectedYear year then
                                 Selected
 
                             else if isInvertedMinMax then
@@ -179,12 +189,12 @@ viewYearList minimum maximum maybeSelected =
                         [ class <| classNameFromState state
                         , property "data-year" <|
                             if isSelectable state then
-                                Json.Encode.int y
+                                Json.Encode.int year
 
                             else
                                 Json.Encode.null
                         ]
-                        [ text (String.fromInt y) ]
+                        [ text (String.fromInt year) ]
                 )
         )
 
@@ -194,22 +204,22 @@ monthNames =
     [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
 
 
-viewMonthList : RataDie -> RataDie -> RataDie -> Html RataDie
-viewMonthList minimum maximum selected =
+viewMonthList : Date -> Date -> Date -> Html Date
+viewMonthList minDate maxDate selected =
     let
         isInvertedMinMax =
-            minimum > maximum
+            compareDate minDate maxDate == GT
 
         first =
-            if RataDie.year selected == RataDie.year minimum then
-                RataDie.monthNumber minimum
+            if Date.year selected == Date.year minDate then
+                Date.monthNumber minDate
 
             else
                 1
 
         last =
-            if RataDie.year selected == RataDie.year maximum then
-                RataDie.monthNumber maximum
+            if Date.year selected == Date.year maxDate then
+                Date.monthNumber maxDate
 
             else
                 12
@@ -217,21 +227,21 @@ viewMonthList minimum maximum selected =
     ol
         [ on "click" <|
             Json.Decode.map
-                (RataDie.numberToMonth >> dateWithMonth selected)
+                (Date.numberToMonth >> dateWithMonth selected)
                 (Json.Decode.at [ "target", "data-month" ] Json.Decode.int)
         ]
         (monthNames
             |> List.indexedMap
-                (\i name ->
+                (\i monthName ->
                     let
-                        n =
+                        monthNumber =
                             i + 1
 
                         state =
-                            if n == RataDie.monthNumber selected then
+                            if monthNumber == Date.monthNumber selected then
                                 Selected
 
-                            else if not (isBetween first last n) || isInvertedMinMax then
+                            else if not (isBetween first last monthNumber) || isInvertedMinMax then
                                 Disabled
 
                             else
@@ -241,12 +251,12 @@ viewMonthList minimum maximum selected =
                         [ class <| classNameFromState state
                         , property "data-month" <|
                             if isSelectable state then
-                                Json.Encode.int n
+                                Json.Encode.int monthNumber
 
                             else
                                 Json.Encode.null
                         ]
-                        [ text name ]
+                        [ text monthName ]
                 )
         )
 
@@ -256,10 +266,10 @@ viewMonthListDisabled =
     ol []
         (monthNames
             |> List.map
-                (\name ->
+                (\monthName ->
                     li
                         [ class <| classNameFromState Disabled ]
-                        [ text name ]
+                        [ text monthName ]
                 )
         )
 
@@ -269,41 +279,41 @@ weekdayNames =
     [ "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su" ]
 
 
-viewWeekdayHeader : Html a
-viewWeekdayHeader =
+weekdayHeader : Html a
+weekdayHeader =
     thead []
         [ tr []
             (weekdayNames
                 |> List.map
-                    (\name ->
-                        th [] [ text name ]
+                    (\weekdayName ->
+                        th [] [ text weekdayName ]
                     )
             )
         ]
 
 
-viewDateTable : RataDie -> RataDie -> RataDie -> Html RataDie
-viewDateTable minimum maximum selected =
+viewDateTable : Date -> Date -> Date -> Html Date
+viewDateTable minDate maxDate selected =
     let
         isInvertedMinMax =
-            minimum > maximum
+            compareDate minDate maxDate == GT
 
         weeks =
-            monthDates (RataDie.year selected) (RataDie.month selected) |> groupsOf 7
+            monthDates (Date.year selected) (Date.month selected) |> groupsOf 7
     in
     table []
-        [ viewWeekdayHeader
+        [ weekdayHeader
         , tbody
             [ on "click" <|
                 Json.Decode.map
-                    identity
+                    Date.fromRataDie
                     (Json.Decode.at [ "target", "data-date" ] Json.Decode.int)
             ]
             (weeks
                 |> List.map
-                    (\week ->
+                    (\dates ->
                         tr []
-                            (week
+                            (dates
                                 |> List.map
                                     (\date ->
                                         let
@@ -311,10 +321,10 @@ viewDateTable minimum maximum selected =
                                                 if date == selected then
                                                     Selected
 
-                                                else if not (date |> isBetween minimum maximum) || isInvertedMinMax then
+                                                else if not (date |> isBetweenDate minDate maxDate) || isInvertedMinMax then
                                                     Disabled
 
-                                                else if RataDie.monthNumber date /= RataDie.monthNumber selected then
+                                                else if Date.month date /= Date.month selected then
                                                     Dimmed
 
                                                 else
@@ -324,12 +334,12 @@ viewDateTable minimum maximum selected =
                                             [ class <| classNameFromState state
                                             , property "data-date" <|
                                                 if isSelectable state then
-                                                    Json.Encode.int date
+                                                    Json.Encode.int (Date.toRataDie date)
 
                                                 else
                                                     Json.Encode.null
                                             ]
-                                            [ text (RataDie.day date |> String.fromInt) ]
+                                            [ text <| String.fromInt (Date.day date) ]
                                     )
                             )
                     )
@@ -337,28 +347,30 @@ viewDateTable minimum maximum selected =
         ]
 
 
-viewDateTableDisabled : RataDie -> Html a
+viewDateTableDisabled : Date -> Html a
 viewDateTableDisabled selected =
     let
         weeks =
-            monthDates (RataDie.year selected) (RataDie.month selected) |> groupsOf 7
+            monthDates (Date.year selected) (Date.month selected) |> groupsOf 7
 
         disabled =
             classNameFromState Disabled
     in
     table []
-        [ viewWeekdayHeader
-        , tbody [] <|
-            List.map
-                (\weekdates ->
-                    tr [] <|
-                        List.map
-                            (\date ->
-                                td
-                                    [ class disabled ]
-                                    [ text (RataDie.day date |> String.fromInt) ]
+        [ weekdayHeader
+        , tbody []
+            (weeks
+                |> List.map
+                    (\dates ->
+                        tr []
+                            (dates
+                                |> List.map
+                                    (\date ->
+                                        td
+                                            [ class disabled ]
+                                            [ text <| String.fromInt (Date.day date) ]
+                                    )
                             )
-                            weekdates
-                )
-                weeks
+                    )
+            )
         ]

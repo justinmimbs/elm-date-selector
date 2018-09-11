@@ -12,7 +12,7 @@
             "elm/html": "1.0.0",
             "elm/json": "1.0.0",
             "elm/time": "1.0.0",
-            "justinmimbs/date": "2.0.1"
+            "justinmimbs/date": "3.0.0"
         },
         "indirect": {
             "elm/parser": "1.1.0",
